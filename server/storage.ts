@@ -34,6 +34,10 @@ export class MemStorage implements IStorage {
     const entry: Entry = {
       ...insertEntry,
       id,
+      photos: insertEntry.photos || null,
+      mood: insertEntry.mood || null,
+      location: insertEntry.location || null,
+      weather: insertEntry.weather || null,
       createdAt: now,
       updatedAt: now,
     };

@@ -6,7 +6,7 @@ export const entries = pgTable("entries", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   content: text("content").notNull(),
-  photos: text("photos").array().default([]),
+  photos: text("photos").array(),
   mood: text("mood"),
   location: text("location"),
   weather: text("weather"),

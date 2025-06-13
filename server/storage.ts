@@ -34,12 +34,14 @@ export class MemStorage implements IStorage {
     const entry: Entry = {
       ...insertEntry,
       id,
-      photos: insertEntry.photos || null,
-      mood: insertEntry.mood || null,
-      location: insertEntry.location || null,
-      weather: insertEntry.weather || null,
+      creatorId: 1,
+      // photos: insertEntry.photos || null,
+      // mood: insertEntry.mood || null,
+      // location: insertEntry.location || null,
+      // weather: insertEntry.weather || null,
       createdAt: now,
       updatedAt: now,
+      deletedAt: null,
     };
     this.entries.set(id, entry);
     return entry;
@@ -65,7 +67,7 @@ export class MemStorage implements IStorage {
   async searchEntries(query: string): Promise<Entry[]> {
     const lowercaseQuery = query.toLowerCase();
     return Array.from(this.entries.values())
-      .filter(entry => 
+      .filter(entry =>
         entry.title.toLowerCase().includes(lowercaseQuery) ||
         entry.content.toLowerCase().includes(lowercaseQuery) ||
         entry.mood?.toLowerCase().includes(lowercaseQuery) ||

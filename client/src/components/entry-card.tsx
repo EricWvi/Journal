@@ -47,9 +47,6 @@ export default function EntryCard({ entry, onEdit }: EntryCardProps) {
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h2 className="text-xl font-semibold text-foreground mb-1">
-              {entry.title}
-            </h2>
             <div className="flex items-center text-[hsl(215,4%,56%)] text-sm space-x-4">
               <span>{formatDate(entry.createdAt)}</span>
               <span>{formatTime(entry.createdAt)}</span>

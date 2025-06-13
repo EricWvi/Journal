@@ -15,7 +15,6 @@ interface EntryModalProps {
 }
 
 export default function EntryModal({ open, onClose, editingId }: EntryModalProps) {
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [mood, setMood] = useState("");
   const [location, setLocation] = useState("");
@@ -33,7 +32,6 @@ export default function EntryModal({ open, onClose, editingId }: EntryModalProps
   useEffect(() => {
     if (open) {
       if (editingEntry) {
-        setTitle(editingEntry.title);
         setContent(editingEntry.content);
         setMood(editingEntry.mood || "");
         setLocation(editingEntry.location || "");
@@ -41,7 +39,6 @@ export default function EntryModal({ open, onClose, editingId }: EntryModalProps
         setPhotos(editingEntry.photos || []);
       } else {
         // Reset for new entry
-        setTitle("");
         setContent("");
         setMood("");
         setLocation("");
@@ -52,17 +49,16 @@ export default function EntryModal({ open, onClose, editingId }: EntryModalProps
   }, [open, editingEntry]);
 
   const handleSave = async () => {
-    if (!title.trim() || !content.trim()) {
+    if (!content.trim()) {
       toast({
-        title: "Missing Information",
-        description: "Please enter both a title and content for your entry.",
+        title: "信息缺失",
+        description: "请在记录中输入正文内容",
         variant: "destructive",
       });
       return;
     }
 
     const entryData = {
-      title: title.trim(),
       content: content.trim(),
       mood: mood.trim() || undefined,
       location: location.trim() || undefined,
@@ -164,16 +160,6 @@ export default function EntryModal({ open, onClose, editingId }: EntryModalProps
                 <X className="w-4 h-4" />
               </Button>
             </div>
-          </div>
-
-          {/* Title Input */}
-          <div className="p-6 border-b border-border">
-            <Input
-              placeholder="Entry title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-2xl font-semibold border-none outline-none bg-transparent placeholder-[hsl(215,4%,56%)] p-0 h-auto focus-visible:ring-0"
-            />
           </div>
 
           {/* Toolbar */}

@@ -23,79 +23,54 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all entries
-  app.get("/api/entries", async (req, res) => {
+  app.post("/api/entry", async (req, res) => {
+    const action = req.query.Action;
     try {
-      const entries = await storage.getEntries();
-      res.json(entries);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch entries" });
-    }
-  });
-
-  // Get single entry
-  app.get("/api/entries/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const entry = await storage.getEntry(id);
-      if (!entry) {
-        return res.status(404).json({ message: "Entry not found" });
+      if (action === "GetEntries") {
+        const entries = await storage.getEntries();
+        return res.json(entries);
       }
-      res.json(entry);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch entry" });
-    }
-  });
-
-  // Create new entry
-  app.post("/api/entries", async (req, res) => {
-    try {
-      const validatedData = insertEntrySchema.parse(req.body);
-      const entry = await storage.createEntry(validatedData);
-      res.status(201).json(entry);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(400).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: "Failed to create entry" });
+      if (action === "GetEntry") {
+        const { id } = req.body;
+        const entry = await storage.getEntry(Number(id));
+        if (!entry) {
+          return res.status(404).json({ message: "Entry not found" });
+        }
+        return res.json(entry);
       }
-    }
-  });
-
-  // Update entry
-  app.patch("/api/entries/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const validatedData = insertEntrySchema.partial().parse(req.body);
-      const entry = await storage.updateEntry(id, validatedData);
-      if (!entry) {
-        return res.status(404).json({ message: "Entry not found" });
+      if (action === "CreateEntry") {
+        const validatedData = insertEntrySchema.parse(req.body);
+        const entry = await storage.createEntry(validatedData);
+        return res.status(201).json(entry);
       }
-      res.json(entry);
+      if (action === "UpdateEntry") {
+        const { id, ...data } = req.body;
+        const validatedData = insertEntrySchema.partial().parse(data);
+        const entry = await storage.updateEntry(Number(id), validatedData);
+        if (!entry) {
+          return res.status(404).json({ message: "Entry not found" });
+        }
+        return res.json(entry);
+      }
+      if (action === "DeleteEntry") {
+        const { id } = req.body;
+        const deleted = await storage.deleteEntry(Number(id));
+        if (!deleted) {
+          return res.status(404).json({ message: "Entry not found" });
+        }
+        return res.status(204).send();
+      }
+      return res.status(400).json({ message: "Unknown Action" });
     } catch (error) {
       if (error instanceof Error) {
-        res.status(400).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: "Failed to update entry" });
+        return res.status(400).json({ message: error.message });
       }
-    }
-  });
-
-  // Delete entry
-  app.delete("/api/entries/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const deleted = await storage.deleteEntry(id);
-      if (!deleted) {
-        return res.status(404).json({ message: "Entry not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: "Failed to delete entry" });
+      return res.status(500).json({ message: "Server error" });
     }
   });
 
   // Search entries
-  app.get("/api/entries/search/:query", async (req, res) => {
+  app.post("/api/entries/search/:query", async (req, res) => {
     try {
       const query = req.params.query;
       const entries = await storage.searchEntries(query);
@@ -111,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.files || !Array.isArray(req.files)) {
         return res.status(400).json({ message: "No files uploaded" });
       }
-      
+
       const filePaths = req.files.map((file: any) => `/uploads/${file.filename}`);
       res.json({ photos: filePaths });
     } catch (error) {

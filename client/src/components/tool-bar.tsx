@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Calendar, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -6,28 +7,39 @@ interface HeaderProps {
   onCalendarToggle: () => void;
 }
 
-export default function Header({
+export default function Toolbar({
   onSearchToggle,
   onCalendarToggle,
 }: HeaderProps) {
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [opacity, setOpacity] = useState(0);
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsMinimized(scrollY > 20);
+      if (scrollY <= 20) {
+        setOpacity(0);
+      } else if (scrollY >= 100) {
+        setOpacity(1);
+      } else {
+        const ratio = (scrollY - 20) / (100 - 20);
+        setOpacity(ratio);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="apple-shadow border-b border-border bg-card rounded-lg">
+    <header
+      className="fixed top-0 z-50 h-auto w-full shrink-0 bg-zinc-50 bg-opacity-80 shadow-md backdrop-blur-lg"
+      style={{ opacity }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-8 items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-semibold text-foreground">Journal</h1>
-            <div className="hidden items-center space-x-2 text-sm text-[hsl(215,4%,56%)] md:flex">
-              <span>Today</span>
-              <span className="text-xs">•</span>
-              <span>{currentDate}</span>
-            </div>
           </div>
 
           <div className="flex items-center space-x-4">

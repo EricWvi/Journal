@@ -1,26 +1,36 @@
 {
-    "git.autofetch": true,
-    "git.confirmSync": false,
-    "editor.fontSize": 18,
-    "editor.fontLigatures": true,
-    "editor.fontFamily": "Hack",
-    "editor.formatOnSave": true,
-    "editor.guides.bracketPairs": false,
-    "editor.guides.indentation": false,
-    "editor.guides.highlightActiveIndentation": false,
-    "files.autoSave": "off",
-    "files.insertFinalNewline": true,
-    "terminal.integrated.fontSize": 16,
-    "debug.console.fontSize": 18,
-    "[markdown]": {
-        "editor.wordWrap": "on",
-    },
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.productIconTheme": "fluent-icons",
-    "workbench.preferredDarkColorTheme": "Solarized Dark",
-    "workbench.preferredLightColorTheme": "Solarized Light",
-    "workbench.colorCustomizations": {
-        "editorCursor.foreground": "#6c878e"
-    },
-    "window.autoDetectColorScheme": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "editor.fontSize": 18,
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "Hack",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.guides.bracketPairs": false,
+  "editor.guides.indentation": false,
+  "editor.guides.highlightActiveIndentation": false,
+  "files.autoSave": "off",
+  "files.insertFinalNewline": true,
+  "terminal.integrated.fontSize": 16,
+  "debug.console.fontSize": 18,
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.productIconTheme": "fluent-icons",
+  "workbench.preferredDarkColorTheme": "Solarized Dark",
+  "workbench.preferredLightColorTheme": "Solarized Light",
+  "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#6c878e"
+  },
+  "window.autoDetectColorScheme": true
 }

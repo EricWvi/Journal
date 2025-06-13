@@ -7,6 +7,8 @@
     "ryu1kn.partial-diff",
     "aaron-bond.better-comments",
     "streetsidesoftware.code-spell-checker",
-    "usernamehw.errorlens"
+    "usernamehw.errorlens",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode"
   ]
 }

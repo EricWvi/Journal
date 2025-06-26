@@ -32,5 +32,6 @@
   "workbench.colorCustomizations": {
     "editorCursor.foreground": "#6c878e"
   },
-  "window.autoDetectColorScheme": true
+  "window.autoDetectColorScheme": true,
+  "cSpell.words": ["Wechat"]
 }

@@ -21,6 +21,7 @@ import {
   useUpdateEntry,
 } from "@/hooks/use-entries";
 import type { Entry } from "@shared/schema";
+import WYSIWYG from "./editor";
 
 interface EntryModalProps {
   open: boolean;
@@ -112,12 +113,11 @@ export default function EntryModal({
 
   const getCurrentDateTime = () => {
     return new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
-      hour: "numeric",
+      hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     });
   };
 
@@ -157,17 +157,12 @@ export default function EntryModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden p-0">
+      <DialogContent className="bottom-0 top-12 overflow-hidden p-0">
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border p-6">
             <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-semibold text-foreground">
-                {editingEntry ? "Edit Entry" : "New Entry"}
-              </h2>
-              <span className="text-sm text-[hsl(215,4%,56%)]">
-                {getCurrentDateTime()}
-              </span>
+              <span className="font-semibold">{getCurrentDateTime()}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -180,29 +175,10 @@ export default function EntryModal({
                 <Save className="mr-2 h-4 w-4" />
                 {editingEntry ? "Update" : "Save"}
               </Button>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
-          {/* Toolbar */}
-          <div className="flex items-center justify-between border-b border-border bg-muted px-6 py-3">
-            <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm">
-                <Bold className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Italic className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <List className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <ListOrdered className="h-4 w-4" />
-              </Button>
-              <div className="h-6 w-px bg-border"></div>
-              <label className="cursor-pointer">
+          {/* <label className="cursor-pointer">
                 <Button variant="ghost" size="sm" asChild>
                   <span>
                     <Upload className="h-4 w-4" />
@@ -215,23 +191,10 @@ export default function EntryModal({
                   className="hidden"
                   onChange={handleFileUpload}
                 />
-              </label>
-              <Button variant="ghost" size="sm">
-                <MapPin className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Smile className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="flex items-center space-x-2 text-sm text-[hsl(215,4%,56%)]">
-              <Save className="h-4 w-4" />
-              <span>{autoSaveStatus}</span>
-            </div>
-          </div>
+              </label> */}
 
           {/* Content Editor */}
-          <div className="flex-1 overflow-y-auto">
+          {/* <div className="flex-1 overflow-y-auto">
             <div className="p-6">
               <Textarea
                 placeholder="What's on your mind?"
@@ -240,27 +203,11 @@ export default function EntryModal({
                 className="min-h-[400px] resize-none border-none p-0 text-lg leading-relaxed focus-visible:ring-0"
               />
             </div>
-          </div>
+          </div> */}
+          <WYSIWYG />
 
           {/* Metadata Footer */}
-          <div className="border-t border-border bg-muted p-6">
-            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-              <Input
-                placeholder="Mood (e.g., Happy, Grateful)"
-                value={mood}
-                onChange={(e) => setMood(e.target.value)}
-              />
-              <Input
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-              <Input
-                placeholder="Weather"
-                value={weather}
-                onChange={(e) => setWeather(e.target.value)}
-              />
-            </div>
+          {/* <div className="border-t border-border bg-muted p-6">
             <div className="flex items-center justify-between text-sm">
               <div className="text-[hsl(215,4%,56%)]">
                 {photos.length > 0 && (
@@ -273,7 +220,7 @@ export default function EntryModal({
                 {content.split(/\s+/).length} words
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>

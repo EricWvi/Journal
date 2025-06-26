@@ -30,8 +30,11 @@ export default function Journal() {
 
   return (
     <div
-      className={`h-screen w-full origin-top overflow-hidden transition-transform duration-300 ease-in-out ${entryModalOpen ? "translate-y-4 scale-95 rounded-lg" : ""}`}
+      className={`relative h-screen w-full origin-top overflow-hidden transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
     >
+      <div
+        className={`pointer-events-none absolute inset-0 z-20 bg-gray-500 transition-all duration-300 ${entryModalOpen ? "bg-opacity-50" : "bg-opacity-0"}`}
+      ></div>
       <div
         className={`flex h-full flex-col overflow-y-auto bg-[rgb(247,245,244)]`}
       >

@@ -18,7 +18,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-6',
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-hidden min-h-[400px] p-6',
       },
     },
   });

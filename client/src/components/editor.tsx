@@ -1,10 +1,55 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Smile, Image, Bold, Italic, Underline } from "lucide-react";
-import { wechatEmojis, type WechatEmoji } from "@/lib/wechat-emoji";
+import {
+  preloadImages,
+  wechatEmojis,
+  type WechatEmoji,
+} from "@/lib/wechat-emoji";
 
 const WYSIWYG = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Focus on mount
+    editorFocus();
+  }, []);
+
+  const savedSelectionRef = useRef<Range | null>(null);
+
+  const saveSelection = (): void => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      savedSelectionRef.current = selection.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const editorFocus = () => {
+    editorRef.current?.focus();
+    if (editorRef.current && savedSelectionRef.current) {
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(savedSelectionRef.current);
+      }
+    } else {
+      if (editorRef.current) {
+        const range = document.createRange();
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false); // false means collapse to end
+        const sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    saveSelection();
+    setShowEmojiPicker(false);
+  };
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -18,11 +63,13 @@ const WYSIWYG = () => {
     }
   }, []);
 
-  interface InsertEmojiFn {
-    (emoji: WechatEmoji): void;
-  }
+  useEffect(() => {
+    // Preload all images when the component mounts
+    // const imageUrls = wechatEmojis.map((emoji) => emoji.url);
+    preloadImages(["/assets/wechat-emoji-sprite.png"]);
+  }, []);
 
-  const insertEmoji: InsertEmojiFn = useCallback((emoji) => {
+  const insertEmoji = useCallback((emoji: WechatEmoji) => {
     const editor = editorRef.current;
     if (!editor) return;
 
@@ -63,13 +110,9 @@ const WYSIWYG = () => {
     setShowEmojiPicker(false);
   }, []);
 
-  const formatText = useCallback((command) => {
-    document.execCommand(command, false, null);
+  const formatText = useCallback((command: string) => {
+    document.execCommand(command, false, undefined);
     editorRef.current?.focus();
-  }, []);
-
-  const handleEditorFocus = useCallback(() => {
-    setShowEmojiPicker(false);
   }, []);
 
   const getEditorContent = useCallback(() => {
@@ -114,7 +157,10 @@ const WYSIWYG = () => {
 
         {/* Emoji picker */}
         <button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          onClick={() => {
+            setShowEmojiPicker(!showEmojiPicker);
+            editorFocus();
+          }}
           className={`flex items-center gap-2 rounded px-3 py-2 transition-colors ${
             showEmojiPicker
               ? "bg-blue-500 text-white"
@@ -122,7 +168,6 @@ const WYSIWYG = () => {
           }`}
         >
           <Smile size={18} />
-          Emojis
         </button>
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
@@ -135,25 +180,22 @@ const WYSIWYG = () => {
           Clear
         </button>
       </div>
-
       {/* Emoji Picker */}
       {showEmojiPicker && (
         <div className="mb-4 rounded-lg border-2 border-blue-200 bg-white p-4 shadow-lg">
           <h3 className="mb-3 text-sm font-semibold text-gray-700">
             Click to insert emoji
           </h3>
-          <div className="grid max-h-48 grid-cols-8 gap-2 overflow-y-auto sm:grid-cols-10 md:grid-cols-12">
+          <div className="grid max-h-48 grid-cols-[repeat(8,40px)] overflow-y-auto sm:grid-cols-10 sm:gap-2 md:grid-cols-12">
             {wechatEmojis.map((emoji: WechatEmoji) => (
-              <div key={emoji.id} className="group relative">
+              <div key={emoji.id} className="relative">
                 <button
                   onClick={() => insertEmoji(emoji)}
-                  className="flex h-10 w-10 items-center justify-center rounded border border-gray-300 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                  className="flex h-10 w-10 items-center justify-center rounded transition-colors sm:border sm:border-gray-300 sm:hover:border-blue-300 sm:hover:bg-blue-50"
                   title={emoji.name}
                 >
-                  <img
-                    src={emoji.url}
-                    alt={emoji.name}
-                    className="h-6 w-6 object-contain"
+                  <span
+                    className={`wechat-emoji h-6 w-6 object-contain [zoom:0.1875] ${emoji.id}`}
                   />
                 </button>
               </div>
@@ -162,30 +204,29 @@ const WYSIWYG = () => {
         </div>
       )}
 
+      {/* TODO placeholder */}
       {/* WYSIWYG Editor */}
       <div className="mb-4">
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Rich Text Editor
-        </label>
         <div
           ref={editorRef}
           contentEditable
-          onFocus={handleEditorFocus}
-          className="min-h-48 w-full rounded-lg border-2 border-gray-300 bg-white p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+          onBlur={handleBlur}
+          className="min-h-48 w-full bg-white p-3"
           style={{ outline: "none" }}
           suppressContentEditableWarning={true}
-        />
+        >
+          qweqweqw
+        </div>
       </div>
-
       {/* HTML Output (for debugging/export) */}
-      <div className="mt-4 rounded-lg bg-gray-50 p-3">
+      {/* <div className="mt-4 rounded-lg bg-gray-50 p-3">
         <h4 className="mb-2 text-sm font-semibold text-gray-700">
           HTML Output:
         </h4>
         <div className="overflow-x-auto rounded border bg-white p-2 font-mono text-xs text-gray-600">
           {getEditorContent()}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -42,7 +42,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               placeholder="Search your journal entries..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 text-lg border-none outline-none bg-transparent focus-visible:ring-0"
+              className="flex-1 text-lg border-none outline-hidden bg-transparent focus-visible:ring-0"
               autoFocus
             />
             <Button variant="ghost" size="sm" onClick={onClose}>

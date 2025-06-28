@@ -33,7 +33,7 @@ export default function Journal() {
       className={`relative h-screen w-full origin-top overflow-hidden transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
     >
       <div
-        className={`pointer-events-none absolute inset-0 z-20 bg-gray-500 transition-all duration-300 ${entryModalOpen ? "bg-opacity-50" : "bg-opacity-0"}`}
+        className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50" : "bg-gray-500/0"}`}
       ></div>
       <div
         className={`flex h-full flex-col overflow-y-auto bg-[rgb(247,245,244)]`}
@@ -53,14 +53,14 @@ export default function Journal() {
           <div className="space-y-6">
             {/* Today's Entry Prompt */}
             <div
-              className="apple-shadow cursor-pointer rounded-xl border-2 border-dashed border-gray-200 bg-card p-6 transition-colors hover:border-[hsl(207,90%,54%)]"
+              className="apple-shadow bg-card cursor-pointer rounded-xl border-2 border-dashed border-gray-200 p-6 transition-colors hover:border-[hsl(207,90%,54%)]"
               onClick={handleCreateEntry}
             >
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(207,90%,54%)] bg-opacity-10">
+                <div className="bg-opacity-10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(207,90%,54%)]">
                   <Plus className="text-2xl text-[hsl(207,90%,54%)]" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold text-foreground">
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
                   Start today's entry
                 </h3>
                 <p className="text-[hsl(215,4%,56%)]">
@@ -75,7 +75,7 @@ export default function Journal() {
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="apple-shadow animate-pulse rounded-xl bg-card p-6"
+                    className="apple-shadow bg-card animate-pulse rounded-xl p-6"
                   >
                     <div className="mb-4 h-6 rounded bg-gray-200"></div>
                     <div className="mb-2 h-4 rounded bg-gray-200"></div>
@@ -104,7 +104,7 @@ export default function Journal() {
         </main>
 
         {/* Floating Action Button */}
-        <div className="fixed bottom-6 right-6 z-40">
+        <div className="fixed right-6 bottom-6 z-40">
           <Button
             size="lg"
             className="h-14 w-14 rounded-full bg-[hsl(207,90%,54%)] shadow-lg transition-all duration-200 hover:bg-[hsl(207,90%,48%)] hover:shadow-xl"

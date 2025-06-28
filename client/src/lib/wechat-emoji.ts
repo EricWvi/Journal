@@ -4,6 +4,17 @@ export interface WechatEmoji {
   url: string;
 }
 
+export const preloadImages = (imageUrls: string[]) => {
+  imageUrls.forEach((url) => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.href = url;
+    link.as = "image";
+    link.type = "image/png";
+    document.head.appendChild(link);
+  });
+};
+
 export const wechatEmojis: WechatEmoji[] = [
   {
     id: "emoji-001",

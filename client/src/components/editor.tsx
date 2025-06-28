@@ -47,21 +47,9 @@ const WYSIWYG = () => {
 
   const handleBlur = () => {
     saveSelection();
-    setShowEmojiPicker(false);
   };
 
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    // Set up the editor with basic styling
-    if (editorRef.current) {
-      editorRef.current.style.minHeight = "200px";
-      editorRef.current.style.padding = "12px";
-      editorRef.current.style.outline = "none";
-      editorRef.current.style.fontSize = "16px";
-      editorRef.current.style.lineHeight = "1.5";
-    }
-  }, []);
 
   useEffect(() => {
     // Preload all images when the component mounts
@@ -73,41 +61,28 @@ const WYSIWYG = () => {
     const editor = editorRef.current;
     if (!editor) return;
 
-    editor.focus();
+    editorFocus();
 
     // Get current selection
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
     const range = selection.getRangeAt(0);
 
-    // Create emoji image element
-    const img = document.createElement("img");
-    img.src = emoji.url;
-    img.alt = emoji.name;
-    img.className = "inline-emoji";
-    img.style.width = "24px";
-    img.style.height = "24px";
-    img.style.verticalAlign = "middle";
-    img.style.margin = "0 2px";
-    img.style.display = "inline-block";
-    img.contentEditable = "false";
-    img.draggable = false;
+    // Create emoji element
+    const emojiSpan = document.createElement("span");
+    emojiSpan.className = `wechat-emoji mx-0.5 inline-block h-6 w-6 object-contain align-bottom [zoom:0.1875] ${emoji.id}`;
+    emojiSpan.contentEditable = "false";
+    emojiSpan.draggable = false;
 
     // Insert the emoji at cursor position
     range.deleteContents();
-    range.insertNode(img);
+    range.insertNode(emojiSpan);
 
-    // Add a space after the emoji for better UX
-    const space = document.createTextNode(" ");
-    range.insertNode(space);
-
-    // Move cursor after the space
-    range.setStartAfter(space);
-    range.setEndAfter(space);
+    // Move cursor after the emoji
+    range.setStartAfter(emojiSpan);
+    range.setEndAfter(emojiSpan);
     selection.removeAllRanges();
     selection.addRange(range);
-
-    setShowEmojiPicker(false);
   }, []);
 
   const formatText = useCallback((command: string) => {
@@ -211,11 +186,12 @@ const WYSIWYG = () => {
           ref={editorRef}
           contentEditable
           onBlur={handleBlur}
-          className="min-h-48 w-full bg-white p-3"
-          style={{ outline: "none" }}
+          className="min-h-48 w-full bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
         >
-          qweqweqw
+          好的好的
+          <br />
+          好的好的
         </div>
       </div>
       {/* HTML Output (for debugging/export) */}

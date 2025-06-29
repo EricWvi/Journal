@@ -86,7 +86,7 @@ export default function Journal() {
             ) : entries.length === 0 ? (
               <div className="py-12 text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
-                  <p className="text-lg text-[hsl(215,4%,56%)]">
+                  <p key={index} className="text-lg text-[hsl(215,4%,56%)]">
                     No entries yet. Start your journaling journey today!
                   </p>
                 ))}

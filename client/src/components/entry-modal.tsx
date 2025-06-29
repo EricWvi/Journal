@@ -12,7 +12,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  VisuallyHidden,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -157,10 +163,14 @@ export default function EntryModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bottom-0 top-12 overflow-hidden p-0">
+      <VisuallyHidden>
+        <DialogTitle>Entry Editor</DialogTitle>
+        <DialogDescription>Entry Content</DialogDescription>
+      </VisuallyHidden>
+      <DialogContent className="top-12 bottom-0 overflow-hidden p-0">
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border p-6">
+          <div className="border-border flex items-center justify-between border-b p-6">
             <div className="flex items-center space-x-4">
               <span className="font-semibold">{getCurrentDateTime()}</span>
             </div>

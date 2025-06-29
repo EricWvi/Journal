@@ -1,11 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Smile, Image, Bold, Italic, Underline } from "lucide-react";
-import {
-  preloadImages,
-  wechatEmojis,
-  type WechatEmoji,
-} from "@/lib/wechat-emoji";
-import { useToast } from "@/hooks/use-toast";
+import EmojiPicker from "@/components/emoji-picker";
+import PhotoPicker from "@/components/photo-picker";
 
 const WYSIWYG = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -15,7 +11,6 @@ const WYSIWYG = () => {
     // Focus on mount
     editorFocus();
   }, []);
-  const { toast } = useToast();
 
   const savedSelectionRef = useRef<Range | null>(null);
 
@@ -24,6 +19,10 @@ const WYSIWYG = () => {
     if (selection && selection.rangeCount > 0) {
       savedSelectionRef.current = selection.getRangeAt(0).cloneRange();
     }
+  };
+
+  const handleBlur = () => {
+    saveSelection();
   };
 
   const editorFocus = () => {
@@ -47,74 +46,6 @@ const WYSIWYG = () => {
       }
     }
   };
-
-  const handleBlur = () => {
-    saveSelection();
-  };
-
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const formData = new FormData();
-    Array.from(files).forEach((file) => {
-      formData.append("photos", file);
-    });
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        imgRef.current!.src = result.photos[0]; // Assuming the API returns an array of photo URLs
-      }
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload photos. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  useEffect(() => {
-    // Preload all images when the component mounts
-    // const imageUrls = wechatEmojis.map((emoji) => emoji.url);
-    preloadImages(["/assets/wechat-emoji-sprite.png"]);
-  }, []);
-
-  const insertEmoji = useCallback((emoji: WechatEmoji) => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    editorFocus();
-
-    // Get current selection
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-    const range = selection.getRangeAt(0);
-
-    // Create emoji element
-    const emojiSpan = document.createElement("span");
-    emojiSpan.className = `wechat-emoji mx-0.5 inline-block h-6 w-6 object-contain align-bottom [zoom:0.1875] ${emoji.id}`;
-    emojiSpan.contentEditable = "false";
-    emojiSpan.draggable = false;
-
-    // Insert the emoji at cursor position
-    range.deleteContents();
-    range.insertNode(emojiSpan);
-
-    // Move cursor after the emoji
-    range.setStartAfter(emojiSpan);
-    range.setEndAfter(emojiSpan);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }, []);
 
   const formatText = useCallback((command: string) => {
     document.execCommand(command, false, undefined);
@@ -187,41 +118,11 @@ const WYSIWYG = () => {
         </button>
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
-
-        <label className="rounded bg-blue-100 px-3 py-2">
-          🏙️
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
-        </label>
+        <PhotoPicker editorFocus={editorFocus} />
       </div>
 
       {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div className="mb-4 rounded-lg border-2 border-blue-200 bg-white p-4 shadow-lg">
-          <h3 className="mb-3 text-sm font-semibold text-gray-700">
-            Click to insert emoji
-          </h3>
-          <div className="grid max-h-48 grid-cols-[repeat(8,40px)] overflow-y-auto sm:grid-cols-10 sm:gap-2 md:grid-cols-12">
-            {wechatEmojis.map((emoji: WechatEmoji) => (
-              <div key={emoji.id} className="relative">
-                <button
-                  onClick={() => insertEmoji(emoji)}
-                  className="flex h-10 w-10 items-center justify-center rounded transition-colors sm:border sm:border-gray-300 sm:hover:border-blue-300 sm:hover:bg-blue-50"
-                  title={emoji.name}
-                >
-                  <span
-                    className={`wechat-emoji h-6 w-6 object-contain [zoom:0.1875] ${emoji.id}`}
-                  />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {showEmojiPicker && <EmojiPicker editorFocus={editorFocus} />}
 
       {/* TODO placeholder */}
       {/* WYSIWYG Editor */}

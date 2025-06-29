@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Smile, Image, Bold, Italic, Underline } from "lucide-react";
 import EmojiPicker from "@/components/emoji-picker";
 import PhotoPicker from "@/components/photo-picker";
+import { preloadImages } from "@/lib/wechat-emoji";
 
 const WYSIWYG = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -10,6 +11,9 @@ const WYSIWYG = () => {
   useEffect(() => {
     // Focus on mount
     editorFocus();
+    // Preload all images when the component mounts
+    // const imageUrls = wechatEmojis.map((emoji) => emoji.url);
+    preloadImages(["/assets/wechat-emoji-sprite.png"]);
   }, []);
 
   const savedSelectionRef = useRef<Range | null>(null);

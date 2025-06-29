@@ -1,21 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import {
-  preloadImages,
-  wechatEmojis,
-  type WechatEmoji,
-} from "@/lib/wechat-emoji";
+import { wechatEmojis, type WechatEmoji } from "@/lib/wechat-emoji";
 
 type Props = {
   editorFocus: () => void;
 };
 
 const EmojiPicker = ({ editorFocus }: Props) => {
-  useEffect(() => {
-    // Preload all images when the component mounts
-    // const imageUrls = wechatEmojis.map((emoji) => emoji.url);
-    preloadImages(["/assets/wechat-emoji-sprite.png"]);
-  }, []);
-
   const insertEmoji = useCallback((emoji: WechatEmoji) => {
     editorFocus();
 

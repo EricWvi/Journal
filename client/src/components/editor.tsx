@@ -5,14 +5,17 @@ import {
   wechatEmojis,
   type WechatEmoji,
 } from "@/lib/wechat-emoji";
+import { useToast } from "@/hooks/use-toast";
 
 const WYSIWYG = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
     // Focus on mount
     editorFocus();
   }, []);
+  const { toast } = useToast();
 
   const savedSelectionRef = useRef<Range | null>(null);
 
@@ -49,7 +52,35 @@ const WYSIWYG = () => {
     saveSelection();
   };
 
-  const fileInputRef = useRef(null);
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const formData = new FormData();
+    Array.from(files).forEach((file) => {
+      formData.append("photos", file);
+    });
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        imgRef.current!.src = result.photos[0]; // Assuming the API returns an array of photo URLs
+      }
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload photos. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     // Preload all images when the component mounts
@@ -154,7 +185,20 @@ const WYSIWYG = () => {
         >
           Clear
         </button>
+
+        <div className="mx-2 h-6 w-px bg-gray-300"></div>
+
+        <label className="rounded bg-blue-100 px-3 py-2">
+          🏙️
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+        </label>
       </div>
+
       {/* Emoji Picker */}
       {showEmojiPicker && (
         <div className="mb-4 rounded-lg border-2 border-blue-200 bg-white p-4 shadow-lg">
@@ -203,6 +247,7 @@ const WYSIWYG = () => {
           {getEditorContent()}
         </div>
       </div> */}
+      <img ref={imgRef}></img>
     </div>
   );
 };

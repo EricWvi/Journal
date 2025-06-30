@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import imageCompression from "browser-image-compression";
 
@@ -65,17 +65,12 @@ const PhotoPicker = ({ editorFocus }: Props) => {
     const range = selection.getRangeAt(0);
 
     const imgContainer = document.createElement("span");
+    imgContainer.className = "block w-full";
     imgContainer.contentEditable = "false";
     imgContainer.draggable = false;
 
     import("react-dom/client").then(({ createRoot }) => {
-      createRoot(imgContainer).render(
-        <>
-          {imgs.map((src, idx) => (
-            <EditorPhoto key={idx} imgSrc={src} />
-          ))}
-        </>,
-      );
+      createRoot(imgContainer).render(<PhotoList imgs={imgs} />);
     });
 
     // Insert the img at cursor position
@@ -105,10 +100,35 @@ const PhotoPicker = ({ editorFocus }: Props) => {
 
 type PhotoProps = {
   imgSrc: string;
+  onDelete: (src: string) => void;
 };
 
-const EditorPhoto = ({ imgSrc }: PhotoProps) => {
-  return <img className="h-10" src={imgSrc} alt="img" />;
+const EditorPhoto = ({ imgSrc, onDelete }: PhotoProps) => {
+  return (
+    <span className="relative block aspect-[4/3] w-full bg-gray-500">
+      <button
+        onClick={() => onDelete(imgSrc)}
+        className="absolute text-red-500"
+      >
+        x
+      </button>
+      <img className="h-full w-full object-contain" src={imgSrc} alt="img" />
+    </span>
+  );
+};
+
+const PhotoList = ({ imgs }: { imgs: string[] }) => {
+  const [items, setItems] = useState(imgs);
+  const handleDelete = (src: string) => {
+    setItems((prevItems) => prevItems.filter((item) => item !== src));
+  };
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((src, idx) => (
+        <EditorPhoto key={idx} imgSrc={src} onDelete={handleDelete} />
+      ))}
+    </div>
+  );
 };
 
 export default PhotoPicker;

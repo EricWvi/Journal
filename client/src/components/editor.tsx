@@ -135,7 +135,7 @@ const WYSIWYG = () => {
           ref={editorRef}
           contentEditable
           onBlur={handleBlur}
-          className="min-h-48 w-full bg-white p-3 text-lg/6 outline-none"
+          className="h-[40vh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
         >
           好的好的

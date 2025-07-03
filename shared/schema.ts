@@ -1,18 +1,25 @@
-import { pgTable, text, serial, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  timestamp,
+  jsonb,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { Node } from "@/lib/html-parse";
 
 export const entries = pgTable("entry", {
   id: serial("id").primaryKey(),
   creatorId: integer("creator_id").default(1).notNull(),
-  content: text("content").default(" ").notNull(),
-  // photos: text("photos").array(),
-  // mood: text("mood"),
-  // location: text("location"),
-  // weather: text("weather"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  deletedAt: timestamp("deleted_at").default(null),
+  deletedAt: timestamp("deleted_at"),
+
+  content: jsonb("content").$type<Node[]>().default([]).notNull(),
+  visibility: text("visibility").default("PUBLIC").notNull(),
+  payload: jsonb("payload").default({}).notNull(),
 });
 
 export const insertEntrySchema = createInsertSchema(entries).omit({

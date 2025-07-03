@@ -8,15 +8,15 @@ import { insertEntrySchema } from "@shared/schema";
 
 // Configure multer for photo uploads
 const upload = multer({
-  dest: 'uploads/',
+  dest: "uploads/",
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req: any, file: any, cb: any) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error("Only image files are allowed"));
     }
   },
 });
@@ -26,9 +26,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/entry", async (req, res) => {
     const action = req.query.Action;
     try {
+      if (action === "GetDraft") {
+        const draft = await storage.getDraft();
+        return res.json({ message: draft });
+      }
       if (action === "GetEntries") {
         const entries = await storage.getEntries();
-        return res.json(entries);
+        return res.json({ message: entries });
       }
       if (action === "GetEntry") {
         const { id } = req.body;
@@ -36,12 +40,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!entry) {
           return res.status(404).json({ message: "Entry not found" });
         }
-        return res.json(entry);
+        return res.json({ message: entry });
       }
       if (action === "CreateEntry") {
-        const validatedData = insertEntrySchema.parse(req.body);
-        const entry = await storage.createEntry(validatedData);
-        return res.status(201).json(entry);
+        const { id, ...data } = req.body;
+        const validatedData = insertEntrySchema.partial().parse(data);
+        const entry = await storage.createEntryFromDraft(
+          Number(id),
+          validatedData,
+        );
+        if (!entry) {
+          return res.status(404).json({ message: "Entry not found" });
+        }
+        return res.json({ message: entry });
       }
       if (action === "UpdateEntry") {
         const { id, ...data } = req.body;
@@ -50,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!entry) {
           return res.status(404).json({ message: "Entry not found" });
         }
-        return res.json(entry);
+        return res.json({ message: entry });
       }
       if (action === "DeleteEntry") {
         const { id } = req.body;
@@ -81,13 +92,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload photos
-  app.post("/api/upload", upload.array('photos', 10), (req: any, res) => {
+  app.post("/api/upload", upload.array("photos", 10), (req: any, res) => {
     try {
       if (!req.files || !Array.isArray(req.files)) {
         return res.status(400).json({ message: "No files uploaded" });
       }
 
-      const filePaths = req.files.map((file: any) => `/uploads/${file.filename}`);
+      const filePaths = req.files.map(
+        (file: any) => `/uploads/${file.filename}`,
+      );
       res.json({ photos: filePaths });
     } catch (error) {
       res.status(500).json({ message: "Failed to upload photos" });
@@ -95,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Serve uploaded files
-  app.use('/uploads', express.static('uploads'));
+  app.use("/uploads", express.static("uploads"));
 
   const httpServer = createServer(app);
   return httpServer;

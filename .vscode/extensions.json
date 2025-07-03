@@ -6,10 +6,10 @@
     "alefragnani.Bookmarks",
     "ryu1kn.partial-diff",
     "aaron-bond.better-comments",
+    "Gruntfuggly.todo-tree",
     "streetsidesoftware.code-spell-checker",
     "usernamehw.errorlens",
     "bradlc.vscode-tailwindcss",
-    "esbenp.prettier-vscode",
-    "formulahendry.auto-rename-tag"
+    "esbenp.prettier-vscode"
   ]
 }

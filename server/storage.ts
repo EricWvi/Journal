@@ -1,10 +1,14 @@
+import { Node, NodeType } from "@/lib/html-parse";
 import { entries, type Entry, type InsertEntry } from "@shared/schema";
+import fs from "fs";
 
 export interface IStorage {
+  getDraft(): Promise<Entry>;
   getEntries(): Promise<Entry[]>;
   getEntry(id: number): Promise<Entry | undefined>;
-  createEntry(entry: InsertEntry): Promise<Entry>;
-  updateEntry(id: number, entry: Partial<InsertEntry>): Promise<Entry | undefined>;
+  createDraft(): Promise<Entry>;
+  createEntryFromDraft(id: number, entry: InsertEntry): Promise<Entry>;
+  updateEntry(id: number, entry: InsertEntry): Promise<Entry | undefined>;
   deleteEntry(id: number): Promise<boolean>;
   searchEntries(query: string): Promise<Entry[]>;
 }
@@ -14,47 +18,98 @@ export class MemStorage implements IStorage {
   private currentId: number;
 
   constructor() {
-    this.entries = new Map();
-    this.currentId = 1;
+    // read from file
+    this.entries = new Map<number, Entry>(
+      JSON.parse(fs.readFileSync("uploads/entries.json", "utf-8")),
+    );
+    this.currentId = this.entries.size + 1;
+
+    // dump to file on exit, pretty formatted
+    process.on("exit", () => {
+      fs.writeFileSync(
+        "uploads/entries.json",
+        JSON.stringify(Array.from(this.entries.entries()), null, 2),
+      );
+    });
+  }
+
+  async getDraft(): Promise<Entry> {
+    const e = Array.from(this.entries.values()).find(
+      (entry) => entry.visibility === "DRAFT",
+    );
+    if (e) return e;
+    return this.createDraft();
   }
 
   async getEntries(): Promise<Entry[]> {
-    return Array.from(this.entries.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return Array.from(this.entries.values())
+      .filter((entry) => entry.visibility !== "DRAFT")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 
   async getEntry(id: number): Promise<Entry | undefined> {
     return this.entries.get(id);
   }
 
-  async createEntry(insertEntry: InsertEntry): Promise<Entry> {
+  async createDraft(): Promise<Entry> {
     const id = this.currentId++;
     const now = new Date();
     const entry: Entry = {
-      ...insertEntry,
       id,
       creatorId: 1,
-      // photos: insertEntry.photos || null,
-      // mood: insertEntry.mood || null,
-      // location: insertEntry.location || null,
-      // weather: insertEntry.weather || null,
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
+
+      content: [],
+      visibility: "DRAFT",
+      payload: {},
     };
     this.entries.set(id, entry);
     return entry;
   }
 
-  async updateEntry(id: number, updateData: Partial<InsertEntry>): Promise<Entry | undefined> {
+  async createEntryFromDraft(
+    id: number,
+    insertEntry: InsertEntry,
+  ): Promise<Entry> {
+    const now = new Date();
+    const entry: Entry = {
+      id,
+      creatorId: 1,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+
+      content: Array.isArray(insertEntry.content)
+        ? (insertEntry.content as Node[])
+        : [],
+      visibility: insertEntry.visibility ?? "PUBLIC",
+      payload: insertEntry.payload ?? {},
+    };
+    this.entries.set(id, entry);
+    return entry;
+  }
+
+  async updateEntry(
+    id: number,
+    updateData: InsertEntry,
+  ): Promise<Entry | undefined> {
     const existing = this.entries.get(id);
     if (!existing) return undefined;
 
     const updated: Entry = {
       ...existing,
-      ...updateData,
       updatedAt: new Date(),
+
+      content: Array.isArray(updateData.content)
+        ? (updateData.content as Node[])
+        : existing.content,
+      visibility: updateData.visibility ?? existing.visibility,
+      payload: updateData.payload ?? existing.payload,
     };
     this.entries.set(id, updated);
     return updated;
@@ -67,13 +122,19 @@ export class MemStorage implements IStorage {
   async searchEntries(query: string): Promise<Entry[]> {
     const lowercaseQuery = query.toLowerCase();
     return Array.from(this.entries.values())
-      .filter(entry =>
-        entry.title.toLowerCase().includes(lowercaseQuery) ||
-        entry.content.toLowerCase().includes(lowercaseQuery) ||
-        entry.mood?.toLowerCase().includes(lowercaseQuery) ||
-        entry.location?.toLowerCase().includes(lowercaseQuery)
-      )
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      .filter((entry) => {
+        const nodes = entry.content as Node[];
+        return nodes.some(
+          (node) =>
+            node.type === NodeType.TEXT &&
+            typeof node.content === "string" &&
+            node.content.toLowerCase().includes(lowercaseQuery),
+        );
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 }
 

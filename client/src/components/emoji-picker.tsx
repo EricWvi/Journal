@@ -5,6 +5,13 @@ type Props = {
   editorFocus: () => void;
 };
 
+export const emojiClassName = (emojiId: string) => {
+  if (emojiId === "") {
+    return "";
+  }
+  return `wechat-emoji mx-0.5 inline-block h-6 w-6 object-contain align-bottom [zoom:0.1875] ${emojiId}`;
+};
+
 const EmojiPicker = ({ editorFocus }: Props) => {
   const insertEmoji = useCallback((emoji: WechatEmoji) => {
     editorFocus();
@@ -16,9 +23,10 @@ const EmojiPicker = ({ editorFocus }: Props) => {
 
     // Create emoji element
     const emojiSpan = document.createElement("span");
-    emojiSpan.className = `wechat-emoji mx-0.5 inline-block h-6 w-6 object-contain align-bottom [zoom:0.1875] ${emoji.id}`;
+    emojiSpan.className = emojiClassName(emoji.id);
     emojiSpan.contentEditable = "false";
     emojiSpan.draggable = false;
+    emojiSpan.setAttribute("data-emoji-id", emoji.id);
 
     // Insert the emoji at cursor position
     range.deleteContents();

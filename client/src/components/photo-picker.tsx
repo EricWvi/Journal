@@ -64,24 +64,30 @@ const PhotoPicker = ({ editorFocus }: Props) => {
     if (!selection || selection.rangeCount === 0) return;
     const range = selection.getRangeAt(0);
 
-    const imgContainer = document.createElement("span");
-    imgContainer.className = "block w-full";
-    imgContainer.contentEditable = "false";
-    imgContainer.draggable = false;
+    imgs.forEach((imgSrc) => {
+      const imgContainer = document.createElement("span");
+      imgContainer.className = "block aspect-[4/3] w-full bg-gray-500";
+      imgContainer.contentEditable = "false";
+      imgContainer.draggable = false;
 
-    import("react-dom/client").then(({ createRoot }) => {
-      createRoot(imgContainer).render(<PhotoList imgs={imgs} />);
+      import("react-dom/client").then(({ createRoot }) => {
+        createRoot(imgContainer).render(<EditorPhoto imgSrc={imgSrc} />);
+      });
+
+      // Insert the img at cursor position
+      range.deleteContents();
+      range.insertNode(imgContainer);
+      range.setStartAfter(imgContainer);
+      range.setEndAfter(imgContainer);
+
+      const br = document.createElement("br");
+      range.insertNode(br);
+      range.setStartAfter(br);
+      range.setEndAfter(br);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
     });
-
-    // Insert the img at cursor position
-    range.deleteContents();
-    range.insertNode(imgContainer);
-
-    // Move cursor after the img
-    range.setStartAfter(imgContainer);
-    range.setEndAfter(imgContainer);
-    selection.removeAllRanges();
-    selection.addRange(range);
   };
 
   return (
@@ -100,34 +106,11 @@ const PhotoPicker = ({ editorFocus }: Props) => {
 
 type PhotoProps = {
   imgSrc: string;
-  onDelete: (src: string) => void;
 };
 
-const EditorPhoto = ({ imgSrc, onDelete }: PhotoProps) => {
+const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
-    <span className="relative block aspect-[4/3] w-full bg-gray-500">
-      <button
-        onClick={() => onDelete(imgSrc)}
-        className="absolute text-red-500"
-      >
-        x
-      </button>
-      <img className="h-full w-full object-contain" src={imgSrc} alt="img" />
-    </span>
-  );
-};
-
-const PhotoList = ({ imgs }: { imgs: string[] }) => {
-  const [items, setItems] = useState(imgs);
-  const handleDelete = (src: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item !== src));
-  };
-  return (
-    <div className="flex flex-wrap gap-2">
-      {items.map((src, idx) => (
-        <EditorPhoto key={idx} imgSrc={src} onDelete={handleDelete} />
-      ))}
-    </div>
+    <img className="h-full w-full object-contain" src={imgSrc} alt="img" />
   );
 };
 

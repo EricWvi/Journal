@@ -15,12 +15,12 @@ import {
   Strikethrough,
 } from "lucide-react";
 import EmojiPicker, { emojiClassName } from "@/components/emoji-picker";
-import PhotoPicker from "@/components/photo-picker";
+import PhotoPicker, { EditorPhoto } from "@/components/photo-picker";
 import { dumpHtmlNodes, Node, NodeType } from "@/lib/html-parse";
 import { Entry } from "@shared/schema";
 
 export interface EditorHandle {
-  dumpEditorContent: () => Node[];
+  dumpEditorContent: () => [Node[], string[]];
 }
 
 type Props = {
@@ -32,6 +32,39 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
+    props.editingEntry?.content.forEach((node) => {
+            switch (node.type) {
+              case NodeType.IMAGE:
+                const child = document.createElement('span');
+                child.className = "block aspect-[4/3] w-full bg-gray-500";
+                child.contentEditable = "false";
+                child.draggable = false;
+                import("react-dom/client").then(({ createRoot }) => {
+                        createRoot(child).render(<EditorPhoto imgSrc={node.content ?? ""} />);
+                      });
+                editorRef.current?.appendChild(child);
+                return;
+              case NodeType.TEXT:
+                const textNode = document.createTextNode(node.content ?? "");
+                editorRef.current?.appendChild(textNode);
+                return;
+              case NodeType.BREAK:
+                const br = document.createElement("br");
+                editorRef.current?.appendChild(br);
+                return;
+              case NodeType.EMOJI:
+                const emoji = document.createElement('span');
+                emoji.className = emojiClassName(node.content ?? "");
+                emoji.contentEditable = "false";
+                emoji.draggable = false;
+                emoji.setAttribute("data-emoji-id", node.content ?? "");
+                editorRef.current?.appendChild(emoji);
+                return;
+              default:
+                return;
+            }
+          })
+
     // Focus on mount
     editorFocus();
   }, []);
@@ -71,12 +104,12 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
     }
   };
 
-  const dumpEditorContent = () => {
+  const dumpEditorContent = (): [Node[], string[]] => {
     if (editorRef.current) {
       const content = dumpHtmlNodes(editorRef.current.childNodes);
-      return content;
+      return [content, []];
     }
-    return [];
+    return [[], []];
   };
 
   useImperativeHandle(ref, () => ({
@@ -178,28 +211,7 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
           onBlur={handleBlur}
           className="h-[40vh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
-        >
-          {props.editingEntry?.content.map((node, index) => {
-            switch (node.type) {
-              case NodeType.TEXT:
-                return <span key={index}>{node.content}</span>;
-              case NodeType.BREAK:
-                return <br key={index} />;
-              case NodeType.EMOJI:
-                return (
-                  <span
-                    key={index}
-                    draggable={false}
-                    contentEditable={false}
-                    data-emoji-id={node.content}
-                    className={emojiClassName(node.content ?? "")}
-                  ></span>
-                );
-              default:
-                return null;
-            }
-          })}
-        </div>
+        ></div>
       </div>
       <img ref={imgRef}></img>
     </div>

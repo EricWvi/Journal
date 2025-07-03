@@ -1,5 +1,5 @@
 import { Node, NodeType } from "@/lib/html-parse";
-import { entries, type Entry, type InsertEntry } from "@shared/schema";
+import { Visibility, type Entry, type InsertEntry } from "@shared/schema";
 import fs from "fs";
 
 export interface IStorage {
@@ -35,7 +35,7 @@ export class MemStorage implements IStorage {
 
   async getDraft(): Promise<Entry> {
     const e = Array.from(this.entries.values()).find(
-      (entry) => entry.visibility === "DRAFT",
+      (entry) => entry.visibility === Visibility.DRAFT,
     );
     if (e) return e;
     return this.createDraft();
@@ -43,7 +43,7 @@ export class MemStorage implements IStorage {
 
   async getEntries(): Promise<Entry[]> {
     return Array.from(this.entries.values())
-      .filter((entry) => entry.visibility !== "DRAFT")
+      .filter((entry) => entry.visibility !== Visibility.DRAFT)
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -65,7 +65,7 @@ export class MemStorage implements IStorage {
       deletedAt: null,
 
       content: [],
-      visibility: "DRAFT",
+      visibility: Visibility.DRAFT,
       payload: {},
     };
     this.entries.set(id, entry);
@@ -87,7 +87,7 @@ export class MemStorage implements IStorage {
       content: Array.isArray(insertEntry.content)
         ? (insertEntry.content as Node[])
         : [],
-      visibility: insertEntry.visibility ?? "PUBLIC",
+      visibility: insertEntry.visibility ?? Visibility.PUBLIC,
       payload: insertEntry.payload ?? {},
     };
     this.entries.set(id, entry);

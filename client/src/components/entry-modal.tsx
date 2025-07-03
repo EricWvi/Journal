@@ -15,7 +15,7 @@ import {
   useUpdateDraft,
   useUpdateEntry,
 } from "@/hooks/use-entries";
-import type { Entry } from "@shared/schema";
+import { Visibility } from "@shared/schema";
 import WYSIWYG, { EditorHandle } from "@/components/editor";
 
 interface EntryModalProps {
@@ -31,7 +31,7 @@ export default function EntryModal({
 }: EntryModalProps) {
   const { data: editingEntry, isLoading } = useEntry(entryId);
   const [visModal, setVisModal] = useState(
-    editingEntry?.visibility || "PUBLIC",
+    editingEntry?.visibility || Visibility.PUBLIC,
   );
 
   const editorRef = useRef<EditorHandle>(null);
@@ -40,44 +40,35 @@ export default function EntryModal({
   const updateEntryMutation = useUpdateEntry();
   const updateDraftMutation = useUpdateDraft();
 
-  useEffect(() => {
-    if (open) {
-      // if (editingEntry) {
-      //   setContent(editingEntry.content);
-      // } else {
-      //   // Reset for new entry
-      //   setContent("");
-      // }
-    }
-  }, [open, editingEntry]);
-
   if (isLoading || !editingEntry) return <></>;
 
   const handleSave = async (discard: boolean) => {
+    const [dump, trash] = editorRef.current?.dumpEditorContent() || [[], []];
     const entryData = {
-      content: editorRef.current?.dumpEditorContent() || [],
+      content: dump,
       visibility: visModal,
       payload: {},
     };
 
     try {
-      if (editingEntry.visibility !== "DRAFT" && !discard) {
+      if (editingEntry.visibility !== Visibility.DRAFT && !discard) {
         await updateEntryMutation.mutateAsync({
           id: editingEntry.id,
           ...entryData,
         });
-      } else if (editingEntry.visibility === "DRAFT") {
+      } else if (editingEntry.visibility === Visibility.DRAFT) {
         if (discard) {
           await updateDraftMutation.mutateAsync({
             id: editingEntry.id,
             ...entryData,
-            visibility: "DRAFT",
+            visibility: Visibility.DRAFT,
           });
         } else {
           await createEntryMutation.mutateAsync({
             ...entryData,
             id: editingEntry.id,
-            visibility: visModal != "DRAFT" ? visModal : "PUBLIC",
+            visibility:
+              visModal != Visibility.DRAFT ? visModal : Visibility.PUBLIC,
           });
         }
       }
@@ -159,7 +150,7 @@ export default function EntryModal({
                 }
               >
                 <Save className="mr-2 h-4 w-4" />
-                "Save"
+                Save
               </Button>
             </div>
           </div>

@@ -30,23 +30,21 @@ const PhotoPicker = ({ editorFocus }: Props) => {
       }),
     );
 
-    // const formData = new FormData();
-    // Array.from(files).forEach((file) => {
-    //   formData.append("photos", file);
-    // });
+    const formData = new FormData();
+    Array.from(compressedFiles).forEach((file) => {
+      formData.append("photos", file);
+    });
 
     try {
-      // const response = await fetch("/api/upload", {
-      //   method: "POST",
-      //   body: formData,
-      // });
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      // if (response.ok) {
-      //   const result = await response.json();
-      //   insertImage(result.photos[0]);
-      // }
-      const imgUrls = compressedFiles.map((file) => URL.createObjectURL(file));
-      insertImage(imgUrls);
+      if (response.ok) {
+        const result = await response.json();
+        insertImage(result.photos);
+      }
     } catch (error) {
       toast({
         title: "Upload Failed",
@@ -108,7 +106,7 @@ type PhotoProps = {
   imgSrc: string;
 };
 
-const EditorPhoto = ({ imgSrc }: PhotoProps) => {
+export const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
     <img className="h-full w-full object-contain" src={imgSrc} alt="img" />
   );

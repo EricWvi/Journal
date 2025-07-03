@@ -82,16 +82,10 @@ export const dumpHtmlNodes = (nodes: NodeListOf<ChildNode>): Node[] => {
       if (element.tagName === "IMG") {
         customNodes.push({
           type: NodeType.IMAGE,
-          content: (element as HTMLImageElement).src,
+          content: (element as HTMLImageElement).src.replace(/^.*\/\/[^/]+/, ""),
         });
       } else if (element.tagName === "BR") {
-        if (
-          customNodes.length > 0 &&
-          customNodes[customNodes.length - 1].type === NodeType.IMAGE
-        ) {
-        } else {
-          customNodes.push({ type: NodeType.BREAK });
-        }
+        customNodes.push({ type: NodeType.BREAK });
       } else if (element.tagName === "SPAN") {
         if (element.classList.contains("wechat-emoji")) {
           customNodes.push({

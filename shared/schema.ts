@@ -10,6 +10,12 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { Node } from "@/lib/html-parse";
 
+export enum Visibility {
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+  DRAFT = "DRAFT",
+}
+
 export const entries = pgTable("entry", {
   id: serial("id").primaryKey(),
   creatorId: integer("creator_id").default(1).notNull(),
@@ -18,7 +24,7 @@ export const entries = pgTable("entry", {
   deletedAt: timestamp("deleted_at"),
 
   content: jsonb("content").$type<Node[]>().default([]).notNull(),
-  visibility: text("visibility").default("PUBLIC").notNull(),
+  visibility: text("visibility").default(Visibility.PUBLIC).notNull(),
   payload: jsonb("payload").default({}).notNull(),
 });
 

@@ -1,14 +1,25 @@
-import { Clock, Edit, Heart, MapPin, MoreHorizontal, Smile } from "lucide-react";
+import {
+  Clock,
+  Edit,
+  Heart,
+  MapPin,
+  MoreHorizontal,
+  Smile,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Entry } from "@shared/schema";
+import { NodeType } from "@/lib/html-parse";
+import { emojiClassName } from "./emoji-picker";
+import { useEntry } from "@/hooks/use-entries";
 
 interface EntryCardProps {
-  entry: Entry;
+  entryId: number;
   onEdit: () => void;
 }
 
-export default function EntryCard({ entry, onEdit }: EntryCardProps) {
+export default function EntryCard({ entryId, onEdit }: EntryCardProps) {
+  const { data: entry, isLoading } = useEntry(entryId);
+
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -34,98 +45,84 @@ export default function EntryCard({ entry, onEdit }: EntryCardProps) {
   const renderMoodIcon = (mood?: string) => {
     switch (mood?.toLowerCase()) {
       case "happy":
-        return <Smile className="w-4 h-4" />;
+        return <Smile className="h-4 w-4" />;
       case "grateful":
-        return <Heart className="w-4 h-4" />;
+        return <Heart className="h-4 w-4" />;
       default:
-        return <Heart className="w-4 h-4" />;
+        return <Heart className="h-4 w-4" />;
     }
   };
 
   return (
-    <Card className="apple-shadow hover:shadow-md transition-shadow overflow-hidden">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center text-[hsl(215,4%,56%)] text-sm space-x-4">
-              <span>{formatDate(entry.createdAt)}</span>
-              <span>{formatTime(entry.createdAt)}</span>
-              {entry.weather && (
-                <span className="flex items-center space-x-1">
-                  <span>{entry.weather}</span>
-                </span>
-              )}
+    <>
+      {!isLoading && entry && (
+        <Card className="apple-shadow overflow-hidden transition-shadow hover:shadow-md">
+          <CardContent className="p-6">
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center space-x-4 text-sm text-[hsl(215,4%,56%)]">
+                  <span>{formatDate(entry.createdAt)}</span>
+                  <span>{formatTime(entry.createdAt)}</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onEdit}
+                  className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onEdit}
-              className="p-2 text-[hsl(215,4%,56%)] hover:text-foreground"
-            >
-              <Edit className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2 text-[hsl(215,4%,56%)] hover:text-foreground"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
 
-        {entry.photos && entry.photos.length > 0 && (
-          <div className="mb-4">
-            <img
-              src={entry.photos[0]}
-              alt="Entry photo"
-              className="w-full h-48 object-cover rounded-xl"
-            />
-          </div>
-        )}
+            <div className="prose prose-sm mb-6 max-w-none">
+              <p className="text-foreground line-clamp-3 leading-relaxed">
+                {entry.content
+                  .filter((node) => node.type !== NodeType.IMAGE)
+                  .map((node, index) => {
+                    switch (node.type) {
+                      case NodeType.TEXT:
+                        return <span key={index}>{node.content}</span>;
+                      case NodeType.BREAK:
+                        return <br key={index} />;
+                      case NodeType.EMOJI:
+                        return (
+                          <span
+                            key={index}
+                            draggable={false}
+                            contentEditable={false}
+                            className={emojiClassName(node.content ?? "")}
+                          ></span>
+                        );
+                      default:
+                        return <></>;
+                    }
+                  })}
+              </p>
+            </div>
 
-        <div className="prose prose-sm max-w-none mb-6">
-          <p className="text-foreground leading-relaxed line-clamp-3">
-            {entry.content}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="flex items-center space-x-4 text-[hsl(215,4%,56%)] text-sm">
-            {entry.mood && (
-              <span className="flex items-center space-x-1">
-                {renderMoodIcon(entry.mood)}
-                <span className="capitalize">{entry.mood}</span>
-              </span>
-            )}
-            {entry.photos && entry.photos.length > 0 && (
-              <span className="flex items-center space-x-1">
-                <span>{entry.photos.length} photo{entry.photos.length > 1 ? 's' : ''}</span>
-              </span>
-            )}
-            {entry.location && (
-              <span className="flex items-center space-x-1">
-                <MapPin className="w-4 h-4" />
-                <span>{entry.location}</span>
-              </span>
-            )}
-            <span className="flex items-center space-x-1">
-              <Clock className="w-4 h-4" />
-              <span>{getReadTime(entry.content)}</span>
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEdit}
-            className="text-[hsl(207,90%,54%)] hover:text-[hsl(207,90%,48%)] text-sm font-medium"
-          >
-            Read more
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+            <div className="border-border flex items-center justify-between border-t pt-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onEdit}
+                className="text-sm font-medium text-[hsl(207,90%,54%)] hover:text-[hsl(207,90%,48%)]"
+              >
+                Read more
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </>
   );
 }

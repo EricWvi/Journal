@@ -14,11 +14,13 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
 
   const { data: searchResults = [] } = useQuery({
-    queryKey: ["/api/entries/search", query],
+    queryKey: ["/api/entry/search", query],
     enabled: query.length > 2,
     queryFn: async () => {
       if (query.length <= 2) return [];
-      const response = await fetch(`/api/entries/search/${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `/api/entry/search/${encodeURIComponent(query)}`,
+      );
       if (!response.ok) throw new Error("Search failed");
       return response.json();
     },
@@ -34,30 +36,30 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden">
-        <div className="p-4 border-b border-border">
+      <DialogContent className="max-w-2xl overflow-hidden p-0">
+        <div className="border-border border-b p-4">
           <div className="flex items-center space-x-3">
             <Search className="text-[hsl(215,4%,56%)]" />
             <Input
               placeholder="Search your journal entries..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 text-lg border-none outline-hidden bg-transparent focus-visible:ring-0"
+              className="flex-1 border-none bg-transparent text-lg outline-hidden focus-visible:ring-0"
               autoFocus
             />
             <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         <div className="max-h-96 overflow-y-auto p-4">
           {query.length <= 2 ? (
-            <p className="text-[hsl(215,4%,56%)] text-center py-8">
+            <p className="py-8 text-center text-[hsl(215,4%,56%)]">
               Type at least 3 characters to search
             </p>
           ) : searchResults.length === 0 ? (
-            <p className="text-[hsl(215,4%,56%)] text-center py-8">
+            <p className="py-8 text-center text-[hsl(215,4%,56%)]">
               No entries found for "{query}"
             </p>
           ) : (
@@ -65,14 +67,14 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               {searchResults.map((entry: any) => (
                 <div
                   key={entry.id}
-                  className="p-3 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                  className="hover:bg-muted cursor-pointer rounded-lg p-3 transition-colors"
                   onClick={onClose}
                 >
-                  <p className="font-medium text-foreground">{entry.title}</p>
+                  <p className="text-foreground font-medium">{entry.title}</p>
                   <p className="text-sm text-[hsl(215,4%,56%)]">
                     {formatDate(entry.createdAt)}
                   </p>
-                  <p className="text-sm text-[hsl(215,4%,56%)] mt-1 line-clamp-2">
+                  <p className="mt-1 line-clamp-2 text-sm text-[hsl(215,4%,56%)]">
                     {entry.content}
                   </p>
                 </div>

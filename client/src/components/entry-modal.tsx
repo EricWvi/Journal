@@ -1,17 +1,6 @@
-import { useState, useEffect } from "react";
-import {
-  X,
-  Save,
-  Upload,
-  MapPin,
-  Smile,
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -19,94 +8,80 @@ import {
   DialogTitle,
   VisuallyHidden,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import {
-  useEntries,
-  useCreateEntry,
+  useEntry,
+  useCreateEntryFromDraft,
+  useUpdateDraft,
   useUpdateEntry,
 } from "@/hooks/use-entries";
 import type { Entry } from "@shared/schema";
-import WYSIWYG from "./editor";
+import WYSIWYG, { EditorHandle } from "@/components/editor";
 
 interface EntryModalProps {
   open: boolean;
   onClose: () => void;
-  editingId?: number | null;
+  entryId: number;
 }
 
 export default function EntryModal({
   open,
   onClose,
-  editingId,
+  entryId,
 }: EntryModalProps) {
-  const [content, setContent] = useState("");
-  const [mood, setMood] = useState("");
-  const [location, setLocation] = useState("");
-  const [weather, setWeather] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [autoSaveStatus, setAutoSaveStatus] = useState("Auto-saved");
+  const { data: editingEntry, isLoading } = useEntry(entryId);
+  const [visModal, setVisModal] = useState(
+    editingEntry?.visibility || "PUBLIC",
+  );
 
+  const editorRef = useRef<EditorHandle>(null);
   const { toast } = useToast();
-  const { data: entries = [] } = useEntries();
-  const createEntryMutation = useCreateEntry();
+  const createEntryMutation = useCreateEntryFromDraft();
   const updateEntryMutation = useUpdateEntry();
-
-  const editingEntry = editingId
-    ? entries.find((e) => e.id === editingId)
-    : null;
+  const updateDraftMutation = useUpdateDraft();
 
   useEffect(() => {
     if (open) {
-      if (editingEntry) {
-        setContent(editingEntry.content);
-        // setMood(editingEntry.mood || "");
-        // setLocation(editingEntry.location || "");
-        // setWeather(editingEntry.weather || "");
-        // setPhotos(editingEntry.photos || []);
-      } else {
-        // Reset for new entry
-        setContent("");
-        setMood("");
-        setLocation("");
-        setWeather("");
-        setPhotos([]);
-      }
+      // if (editingEntry) {
+      //   setContent(editingEntry.content);
+      // } else {
+      //   // Reset for new entry
+      //   setContent("");
+      // }
     }
   }, [open, editingEntry]);
 
-  const handleSave = async () => {
-    if (!content.trim()) {
-      toast({
-        title: "信息缺失",
-        description: "请在记录中输入正文内容",
-        variant: "destructive",
-      });
-      return;
-    }
+  if (isLoading || !editingEntry) return <></>;
 
+  const handleSave = async (discard: boolean) => {
     const entryData = {
-      content: content.trim(),
-      mood: mood.trim() || undefined,
-      location: location.trim() || undefined,
-      weather: weather.trim() || undefined,
-      photos: photos.length > 0 ? photos : undefined,
+      content: editorRef.current?.dumpEditorContent() || [],
+      visibility: visModal,
+      payload: {},
     };
 
     try {
-      if (editingId && editingEntry) {
-        await updateEntryMutation.mutateAsync({ id: editingId, ...entryData });
-        toast({
-          title: "Entry Updated",
-          description: "Your journal entry has been updated successfully.",
+      if (editingEntry.visibility !== "DRAFT" && !discard) {
+        await updateEntryMutation.mutateAsync({
+          id: editingEntry.id,
+          ...entryData,
         });
-      } else {
-        await createEntryMutation.mutateAsync(entryData);
-        toast({
-          title: "Entry Created",
-          description: "Your journal entry has been saved successfully.",
-        });
+      } else if (editingEntry.visibility === "DRAFT") {
+        if (discard) {
+          await updateDraftMutation.mutateAsync({
+            id: editingEntry.id,
+            ...entryData,
+            visibility: "DRAFT",
+          });
+        } else {
+          await createEntryMutation.mutateAsync({
+            ...entryData,
+            id: editingEntry.id,
+            visibility: visModal != "DRAFT" ? visModal : "PUBLIC",
+          });
+        }
       }
+
       onClose();
     } catch (error) {
       toast({
@@ -146,7 +121,7 @@ export default function EntryModal({
 
       if (response.ok) {
         const result = await response.json();
-        setPhotos((prev) => [...prev, ...result.photos]);
+        // setPhotos((prev) => [...prev, ...result.photos]);
         toast({
           title: "Photos Uploaded",
           description: `${result.photos.length} photo(s) added to your entry.`,
@@ -162,7 +137,7 @@ export default function EntryModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={() => handleSave(true)}>
       <VisuallyHidden>
         <DialogTitle>Entry Editor</DialogTitle>
         <DialogDescription>Entry Content</DialogDescription>
@@ -177,13 +152,14 @@ export default function EntryModal({
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
-                onClick={handleSave}
+                onClick={() => handleSave(false)}
                 disabled={
-                  createEntryMutation.isPending || updateEntryMutation.isPending
+                  // createEntryMutation.isPending || updateEntryMutation.isPending
+                  updateEntryMutation.isPending
                 }
               >
                 <Save className="mr-2 h-4 w-4" />
-                {editingEntry ? "Update" : "Save"}
+                "Save"
               </Button>
             </div>
           </div>
@@ -202,35 +178,7 @@ export default function EntryModal({
                   onChange={handleFileUpload}
                 />
               </label> */}
-
-          {/* Content Editor */}
-          {/* <div className="flex-1 overflow-y-auto">
-            <div className="p-6">
-              <Textarea
-                placeholder="What's on your mind?"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="min-h-[400px] resize-none border-none p-0 text-lg leading-relaxed focus-visible:ring-0"
-              />
-            </div>
-          </div> */}
-          <WYSIWYG />
-
-          {/* Metadata Footer */}
-          {/* <div className="border-t border-border bg-muted p-6">
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-[hsl(215,4%,56%)]">
-                {photos.length > 0 && (
-                  <span>
-                    {photos.length} photo{photos.length > 1 ? "s" : ""} attached
-                  </span>
-                )}
-              </div>
-              <div className="text-[hsl(215,4%,56%)]">
-                {content.split(/\s+/).length} words
-              </div>
-            </div>
-          </div> */}
+          <WYSIWYG ref={editorRef} editingEntry={editingEntry} />
         </div>
       </DialogContent>
     </Dialog>

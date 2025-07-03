@@ -1,19 +1,39 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
-import { Smile, Image, Bold, Italic, Underline } from "lucide-react";
-import EmojiPicker from "@/components/emoji-picker";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import {
+  Smile,
+  Highlighter,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+} from "lucide-react";
+import EmojiPicker, { emojiClassName } from "@/components/emoji-picker";
 import PhotoPicker from "@/components/photo-picker";
-import { preloadImages } from "@/lib/wechat-emoji";
+import { dumpHtmlNodes, Node, NodeType } from "@/lib/html-parse";
+import { Entry } from "@shared/schema";
 
-const WYSIWYG = () => {
+export interface EditorHandle {
+  dumpEditorContent: () => Node[];
+}
+
+type Props = {
+  editingEntry: Entry | null;
+};
+
+const WYSIWYG = forwardRef((props: Props, ref) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
     // Focus on mount
     editorFocus();
-    // Preload all images when the component mounts
-    // const imageUrls = wechatEmojis.map((emoji) => emoji.url);
-    preloadImages(["/assets/wechat-emoji-sprite.png"]);
   }, []);
 
   const savedSelectionRef = useRef<Range | null>(null);
@@ -51,20 +71,26 @@ const WYSIWYG = () => {
     }
   };
 
+  const dumpEditorContent = () => {
+    if (editorRef.current) {
+      const content = dumpHtmlNodes(editorRef.current.childNodes);
+      return content;
+    }
+    return [];
+  };
+
+  useImperativeHandle(ref, () => ({
+    dumpEditorContent,
+  }));
+
+  const handleHtmlDump = () => {
+    const dumpNodes = dumpEditorContent();
+    console.log("Dump Output:", dumpNodes);
+  };
+
   const formatText = useCallback((command: string) => {
     document.execCommand(command, false, undefined);
     editorRef.current?.focus();
-  }, []);
-
-  const getEditorContent = useCallback(() => {
-    return editorRef.current?.innerHTML || "";
-  }, []);
-
-  const clearEditor = useCallback(() => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = "";
-      editorRef.current.focus();
-    }
   }, []);
 
   return (
@@ -93,6 +119,20 @@ const WYSIWYG = () => {
         >
           <Underline size={18} />
         </button>
+        <button
+          onClick={() => formatText("strikethrough")}
+          className="rounded p-2 transition-colors hover:bg-gray-200"
+          title="Strikethrough"
+        >
+          <Strikethrough size={18} />
+        </button>
+        <button
+          onClick={() => formatText("mark")}
+          className="rounded p-2 transition-colors hover:bg-gray-200"
+          title="Highlighter"
+        >
+          <Highlighter size={18} />
+        </button>
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
 
@@ -115,10 +155,10 @@ const WYSIWYG = () => {
 
         {/* Clear button */}
         <button
-          onClick={clearEditor}
+          onClick={handleHtmlDump}
           className="rounded bg-red-100 px-3 py-2 text-red-700 transition-colors hover:bg-red-200"
         >
-          Clear
+          Dump
         </button>
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
@@ -129,6 +169,7 @@ const WYSIWYG = () => {
       {showEmojiPicker && <EmojiPicker editorFocus={editorFocus} />}
 
       {/* TODO placeholder */}
+      {/* TODO 提取 editor 和 card 的 parse 部分，以及处理 image */}
       {/* WYSIWYG Editor */}
       <div className="mb-4">
         <div
@@ -138,23 +179,31 @@ const WYSIWYG = () => {
           className="h-[40vh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
         >
-          好的好的
-          <br />
-          好的好的
+          {props.editingEntry?.content.map((node, index) => {
+            switch (node.type) {
+              case NodeType.TEXT:
+                return <span key={index}>{node.content}</span>;
+              case NodeType.BREAK:
+                return <br key={index} />;
+              case NodeType.EMOJI:
+                return (
+                  <span
+                    key={index}
+                    draggable={false}
+                    contentEditable={false}
+                    data-emoji-id={node.content}
+                    className={emojiClassName(node.content ?? "")}
+                  ></span>
+                );
+              default:
+                return null;
+            }
+          })}
         </div>
       </div>
-      {/* HTML Output (for debugging/export) */}
-      {/* <div className="mt-4 rounded-lg bg-gray-50 p-3">
-        <h4 className="mb-2 text-sm font-semibold text-gray-700">
-          HTML Output:
-        </h4>
-        <div className="overflow-x-auto rounded border bg-white p-2 font-mono text-xs text-gray-600">
-          {getEditorContent()}
-        </div>
-      </div> */}
       <img ref={imgRef}></img>
     </div>
   );
-};
+});
 
 export default WYSIWYG;

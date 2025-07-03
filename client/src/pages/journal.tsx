@@ -7,25 +7,32 @@ import SearchOverlay from "@/components/search-overlay";
 import CalendarOverlay from "@/components/calendar-overlay";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useEntries } from "@/hooks/use-entries";
+import { useDraft, useEntry, useEntries } from "@/hooks/use-entries";
 import Toolbar from "@/components/tool-bar";
+import { Entry } from "@shared/schema";
 
 export default function Journal() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [entryModalOpen, setEntryModalOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<number | null>(null);
+  const [editingEntry, setEditingEntry] = useState<number>(0);
 
   const { data: entries = [], isLoading } = useEntries();
 
-  const handleCreateEntry = () => {
-    setEditingEntry(null);
+  const handleCreateEntry = async () => {
+    const draft = await useDraft();
+    setEditingEntry(draft);
     setEntryModalOpen(true);
   };
 
   const handleEditEntry = (id: number) => {
     setEditingEntry(id);
     setEntryModalOpen(true);
+  };
+
+  const handleEntryModalClose = () => {
+    setEntryModalOpen(false);
+    setEditingEntry(0);
   };
 
   return (
@@ -48,7 +55,7 @@ export default function Journal() {
         />
 
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          <StatsCards entries={entries} />
+          {/* <StatsCards entries={entries} /> */}
 
           <div className="space-y-6">
             {/* Today's Entry Prompt */}
@@ -92,11 +99,11 @@ export default function Journal() {
                 ))}
               </div>
             ) : (
-              entries.map((entry) => (
+              entries.map((entryId) => (
                 <EntryCard
-                  key={entry.id}
-                  entry={entry}
-                  onEdit={() => handleEditEntry(entry.id)}
+                  key={entryId}
+                  entryId={entryId}
+                  onEdit={() => handleEditEntry(entryId)}
                 />
               ))
             )}
@@ -116,16 +123,18 @@ export default function Journal() {
 
         {/* Overlays and Modals */}
         <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-        <CalendarOverlay
+        {/* <CalendarOverlay
           open={calendarOpen}
           onClose={() => setCalendarOpen(false)}
           entries={entries}
-        />
-        <EntryModal
-          open={entryModalOpen}
-          onClose={() => setEntryModalOpen(false)}
-          editingId={editingEntry}
-        />
+        /> */}
+        {editingEntry !== 0 && (
+          <EntryModal
+            open={entryModalOpen}
+            onClose={handleEntryModalClose}
+            entryId={editingEntry}
+          />
+        )}
       </div>
     </div>
   );

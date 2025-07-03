@@ -42,7 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         return res.json({ message: entry });
       }
-      if (action === "CreateEntry") {
+      if (action === "createEntryFromDraft") {
         const { id, ...data } = req.body;
         const validatedData = insertEntrySchema.partial().parse(data);
         const entry = await storage.createEntryFromDraft(
@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Search entries
-  app.post("/api/entries/search/:query", async (req, res) => {
+  app.post("/api/entry/search/:query", async (req, res) => {
     try {
       const query = req.params.query;
       const entries = await storage.searchEntries(query);

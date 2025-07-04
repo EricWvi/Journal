@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import imageCompression from "browser-image-compression";
+import { createRoot } from "react-dom/client";
 
 type Props = {
   editorFocus: () => void;
@@ -22,17 +23,19 @@ const PhotoPicker = ({ editorFocus }: Props) => {
     };
     const compressedFiles: File[] = await Promise.all(
       Array.from(files).map(async (file) => {
-        try {
-          return await imageCompression(file, options);
-        } catch (error) {
-          return file;
-        }
+      try {
+        const compressed = await imageCompression(file, options);
+        // Preserve original file name
+        return new File([compressed], file.name, { type: compressed.type });
+      } catch (error) {
+        return file;
+      }
       }),
     );
 
     const formData = new FormData();
-    Array.from(compressedFiles).forEach((file) => {
-      formData.append("photos", file);
+    compressedFiles.forEach((file) => {
+      formData.append("photos", file, file.name);
     });
 
     try {
@@ -68,18 +71,21 @@ const PhotoPicker = ({ editorFocus }: Props) => {
       imgContainer.contentEditable = "false";
       imgContainer.draggable = false;
 
-      import("react-dom/client").then(({ createRoot }) => {
-        createRoot(imgContainer).render(<EditorPhoto imgSrc={imgSrc} />);
-      });
+      createRoot(imgContainer).render(<EditorPhoto imgSrc={imgSrc} />);
 
       // Insert the img at cursor position
       range.deleteContents();
       range.insertNode(imgContainer);
-      range.setStartAfter(imgContainer);
-      range.setEndAfter(imgContainer);
 
+      // Insert <br> after image
       const br = document.createElement("br");
-      range.insertNode(br);
+      imgContainer.parentNode?.insertBefore(br, imgContainer.nextSibling);
+
+      // Insert zero-width space after <br> to fix the problem of image not being deletable
+      // const zws = document.createTextNode("\u200B");
+      // br.parentNode?.insertBefore(zws, br.nextSibling);
+
+      // Move range after all inserted nodes
       range.setStartAfter(br);
       range.setEndAfter(br);
 
@@ -108,7 +114,11 @@ type PhotoProps = {
 
 export const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
-    <img className="h-full w-full object-contain" src={imgSrc} alt="img" />
+    <img
+      className="h-full w-full object-contain"
+      src={"/api/m/" + imgSrc}
+      alt="img"
+    />
   );
 };
 

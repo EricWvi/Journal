@@ -83,12 +83,11 @@ export const dumpHtmlNodes = (nodes: NodeListOf<ChildNode>): Node[] => {
         if (customNodes.length === 0) {
           customNodes.push({ type: NodeType.BREAK });
         }
+        const src = (element as HTMLImageElement).src;
+        const link = src.substring(src.lastIndexOf("/") + 1);
         customNodes.push({
           type: NodeType.IMAGE,
-          content: (element as HTMLImageElement).src.replace(
-            /^.*\/\/[^/]+/,
-            "",
-          ),
+          content: link,
         });
       } else if (element.tagName === "BR") {
         customNodes.push({ type: NodeType.BREAK });

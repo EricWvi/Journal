@@ -113,40 +113,6 @@ export default function EntryModal({
     });
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const formData = new FormData();
-    Array.from(files).forEach((file) => {
-      formData.append("photos", file);
-    });
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        // setPhotos((prev) => [...prev, ...result.photos]);
-        toast({
-          title: "Photos Uploaded",
-          description: `${result.photos.length} photo(s) added to your entry.`,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload photos. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={() => handleSave(true)}>
       <VisuallyHidden>
@@ -165,8 +131,9 @@ export default function EntryModal({
                 variant="outline"
                 onClick={() => handleSave(false)}
                 disabled={
-                  // createEntryMutation.isPending || updateEntryMutation.isPending
-                  updateEntryMutation.isPending
+                  createEntryMutation.isPending ||
+                  updateEntryMutation.isPending ||
+                  updateDraftMutation.isPending
                 }
               >
                 <Save className="mr-2 h-4 w-4" />

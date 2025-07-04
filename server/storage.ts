@@ -18,10 +18,18 @@ export class MemStorage implements IStorage {
   private currentId: number;
 
   constructor() {
+    this.entries = new Map<number, Entry>();
     // read from file
-    this.entries = new Map<number, Entry>(
-      JSON.parse(fs.readFileSync("uploads/entries.json", "utf-8")),
-    );
+    if (!fs.existsSync("uploads")) {
+      fs.mkdirSync("uploads");
+    } else {
+      if (fs.existsSync("uploads/entries.json")) {
+        this.entries = new Map(
+          JSON.parse(fs.readFileSync("uploads/entries.json", "utf-8")),
+        );
+      }
+    }
+
     this.currentId = this.entries.size + 1;
 
     // dump to file on exit, pretty formatted

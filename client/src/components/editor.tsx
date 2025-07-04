@@ -18,6 +18,7 @@ import EmojiPicker, { emojiClassName } from "@/components/emoji-picker";
 import PhotoPicker, { EditorPhoto } from "@/components/photo-picker";
 import { dumpHtmlNodes, Node, NodeType } from "@/lib/html-parse";
 import { Entry } from "@shared/schema";
+import { createRoot } from "react-dom/client";
 
 export interface EditorHandle {
   dumpEditorContent: () => [Node[], string[], string[]];
@@ -39,11 +40,7 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
           child.className = "block aspect-[4/3] w-full bg-gray-500";
           child.contentEditable = "false";
           child.draggable = false;
-          import("react-dom/client").then(({ createRoot }) => {
-            createRoot(child).render(
-              <EditorPhoto imgSrc={node.content ?? ""} />,
-            );
-          });
+          createRoot(child).render(<EditorPhoto imgSrc={node.content ?? ""} />);
           editorRef.current?.appendChild(child);
           return;
         case NodeType.TEXT:

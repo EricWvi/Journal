@@ -20,7 +20,7 @@ import { dumpHtmlNodes, Node, NodeType } from "@/lib/html-parse";
 import { Entry } from "@shared/schema";
 
 export interface EditorHandle {
-  dumpEditorContent: () => [Node[], string[]];
+  dumpEditorContent: () => [Node[], string[], string[]];
 }
 
 type Props = {
@@ -33,37 +33,39 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
   const imgRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
     props.editingEntry?.content.forEach((node) => {
-            switch (node.type) {
-              case NodeType.IMAGE:
-                const child = document.createElement('span');
-                child.className = "block aspect-[4/3] w-full bg-gray-500";
-                child.contentEditable = "false";
-                child.draggable = false;
-                import("react-dom/client").then(({ createRoot }) => {
-                        createRoot(child).render(<EditorPhoto imgSrc={node.content ?? ""} />);
-                      });
-                editorRef.current?.appendChild(child);
-                return;
-              case NodeType.TEXT:
-                const textNode = document.createTextNode(node.content ?? "");
-                editorRef.current?.appendChild(textNode);
-                return;
-              case NodeType.BREAK:
-                const br = document.createElement("br");
-                editorRef.current?.appendChild(br);
-                return;
-              case NodeType.EMOJI:
-                const emoji = document.createElement('span');
-                emoji.className = emojiClassName(node.content ?? "");
-                emoji.contentEditable = "false";
-                emoji.draggable = false;
-                emoji.setAttribute("data-emoji-id", node.content ?? "");
-                editorRef.current?.appendChild(emoji);
-                return;
-              default:
-                return;
-            }
-          })
+      switch (node.type) {
+        case NodeType.IMAGE:
+          const child = document.createElement("span");
+          child.className = "block aspect-[4/3] w-full bg-gray-500";
+          child.contentEditable = "false";
+          child.draggable = false;
+          import("react-dom/client").then(({ createRoot }) => {
+            createRoot(child).render(
+              <EditorPhoto imgSrc={node.content ?? ""} />,
+            );
+          });
+          editorRef.current?.appendChild(child);
+          return;
+        case NodeType.TEXT:
+          const textNode = document.createTextNode(node.content ?? "");
+          editorRef.current?.appendChild(textNode);
+          return;
+        case NodeType.BREAK:
+          const br = document.createElement("br");
+          editorRef.current?.appendChild(br);
+          return;
+        case NodeType.EMOJI:
+          const emoji = document.createElement("span");
+          emoji.className = emojiClassName(node.content ?? "");
+          emoji.contentEditable = "false";
+          emoji.draggable = false;
+          emoji.setAttribute("data-emoji-id", node.content ?? "");
+          editorRef.current?.appendChild(emoji);
+          return;
+        default:
+          return;
+      }
+    });
 
     // Focus on mount
     editorFocus();
@@ -104,12 +106,22 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
     }
   };
 
-  const dumpEditorContent = (): [Node[], string[]] => {
-    if (editorRef.current) {
+  const dumpEditorContent = (): [Node[], string[], string[]] => {
+    if (editorRef.current && props.editingEntry) {
+      const prev = props.editingEntry.content
+        .filter((node) => node.type === NodeType.IMAGE)
+        .map((node) => String(node.content));
       const content = dumpHtmlNodes(editorRef.current.childNodes);
-      return [content, []];
+      const curr = content
+        .filter((node) => node.type === NodeType.IMAGE)
+        .map((node) => String(node.content));
+      // New items in curr
+      const newItems = curr.filter((item) => !prev.includes(item));
+      // Deleted items from curr (i.e., were in prev but not in curr)
+      const deletedItems = prev.filter((item) => !curr.includes(item));
+      return [content, newItems, deletedItems];
     }
-    return [[], []];
+    return [[], [], []];
   };
 
   useImperativeHandle(ref, () => ({

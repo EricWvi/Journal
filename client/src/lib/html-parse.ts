@@ -80,9 +80,15 @@ export const dumpHtmlNodes = (nodes: NodeListOf<ChildNode>): Node[] => {
         style &= ~Style.BOLD;
       }
       if (element.tagName === "IMG") {
+        if (customNodes.length === 0) {
+          customNodes.push({ type: NodeType.BREAK });
+        }
         customNodes.push({
           type: NodeType.IMAGE,
-          content: (element as HTMLImageElement).src.replace(/^.*\/\/[^/]+/, ""),
+          content: (element as HTMLImageElement).src.replace(
+            /^.*\/\/[^/]+/,
+            "",
+          ),
         });
       } else if (element.tagName === "BR") {
         customNodes.push({ type: NodeType.BREAK });

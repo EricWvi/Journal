@@ -17,6 +17,7 @@ import {
 } from "@/hooks/use-entries";
 import { Visibility } from "@shared/schema";
 import WYSIWYG, { EditorHandle } from "@/components/editor";
+import { outTrash } from "@/hooks/use-apis";
 
 interface EntryModalProps {
   open: boolean;
@@ -43,7 +44,11 @@ export default function EntryModal({
   if (isLoading || !editingEntry) return <></>;
 
   const handleSave = async (discard: boolean) => {
-    const [dump, trash] = editorRef.current?.dumpEditorContent() || [[], []];
+    const [dump, newIds, trash] = editorRef.current?.dumpEditorContent() || [
+      [],
+      [],
+      [],
+    ];
     const entryData = {
       content: dump,
       visibility: visModal,
@@ -51,12 +56,24 @@ export default function EntryModal({
     };
 
     try {
-      if (editingEntry.visibility !== Visibility.DRAFT && !discard) {
-        await updateEntryMutation.mutateAsync({
-          id: editingEntry.id,
-          ...entryData,
-        });
+      if (editingEntry.visibility !== Visibility.DRAFT) {
+        if (!discard) {
+          if (trash.length > 0) {
+            outTrash(trash);
+          }
+          await updateEntryMutation.mutateAsync({
+            id: editingEntry.id,
+            ...entryData,
+          });
+        } else {
+          if (newIds.length > 0) {
+            outTrash(newIds);
+          }
+        }
       } else if (editingEntry.visibility === Visibility.DRAFT) {
+        if (trash.length > 0) {
+          outTrash(trash);
+        }
         if (discard) {
           await updateDraftMutation.mutateAsync({
             id: editingEntry.id,

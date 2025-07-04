@@ -3,6 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { storage } from "./storage";
 import { insertEntrySchema } from "@shared/schema";
 
@@ -98,17 +99,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No files uploaded" });
       }
 
-      const filePaths = req.files.map(
-        (file: any) => `/uploads/${file.filename}`,
-      );
+      const filePaths = req.files.map((file: any) => `/api/m/${file.filename}`);
       res.json({ photos: filePaths });
     } catch (error) {
       res.status(500).json({ message: "Failed to upload photos" });
     }
   });
+  app.post("/api/media", async (req, res) => {
+    const action = req.query.Action;
+    try {
+      if (action === "DeleteMedia") {
+        const { ids } = req.body;
+        ids.forEach((url: string) => {
+          const id = url.split("/").pop() || "";
+          const filePath = path.join("uploads", id);
+          // Delete file from file system
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(`Failed to delete file ${filePath}:`, err);
+            }
+          });
+        });
+        return res.json({ ids: ids });
+      }
+      return res.status(400).json({ message: "Unknown Action" });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
 
   // Serve uploaded files
-  app.use("/uploads", express.static("uploads"));
+  app.use("/api/m", express.static("uploads"));
 
   const httpServer = createServer(app);
   return httpServer;

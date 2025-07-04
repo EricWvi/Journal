@@ -32,8 +32,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({ message: draft });
       }
       if (action === "GetEntries") {
+        const { page } = req.body;
         const entries = await storage.getEntries();
-        return res.json({ message: entries });
+        const hasMore = entries.length > (page + 1) * 10;
+        const entriesInPage = entries.slice(page * 10, (page + 1) * 10);
+        if (entriesInPage.length === 0) {
+          return res.status(404).json({ message: "No entries found" });
+        }
+        return res.json({ message: { entries: entriesInPage, hasMore } });
       }
       if (action === "GetEntry") {
         const { id } = req.body;

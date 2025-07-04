@@ -23,12 +23,14 @@ interface EntryModalProps {
   open: boolean;
   onClose: () => void;
   entryId: number;
+  refresh: () => void;
 }
 
 export default function EntryModal({
   open,
   onClose,
   entryId,
+  refresh,
 }: EntryModalProps) {
   const { data: editingEntry, isLoading } = useEntry(entryId);
   const [visModal, setVisModal] = useState(
@@ -87,6 +89,7 @@ export default function EntryModal({
             visibility:
               visModal != Visibility.DRAFT ? visModal : Visibility.PUBLIC,
           });
+          refresh();
         }
       }
 

@@ -2,25 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Entry, InsertEntry } from "@shared/schema";
 
-export function useEntries() {
-  const queryClient = useQueryClient();
-
-  return useQuery<number[]>({
-    queryKey: ["homepage"],
-    queryFn: async () => {
-      const response = await apiRequest(
-        "POST",
-        "/api/entry?Action=GetEntries",
-        {},
-      );
-      const data = await response.json();
-      const ids = (data["message"] as Entry[]).map((entry) => {
-        queryClient.setQueryData(["/api/entry", entry.id], entry);
-        return entry.id;
-      });
-      return ids;
-    },
+export async function useEntries(
+  page: number = 0,
+  setQueryFn: (key: (string | number)[], data: any) => void,
+): Promise<[number[], boolean]> {
+  const response = await apiRequest("POST", "/api/entry?Action=GetEntries", {
+    page,
   });
+  const data = await response.json();
+  const ids = (data.message.entries as Entry[]).map((entry) => {
+    setQueryFn(["/api/entry", entry.id], entry);
+    return entry.id;
+  });
+  return [ids, data.message.hasMore];
 }
 
 export function useEntry(id: number) {
@@ -58,7 +52,10 @@ export function useCreateEntryFromDraft() {
       );
       return response.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["homepage"] }),
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries({
+        queryKey: ["/api/entry", variables.id],
+      }),
   });
 }
 
@@ -77,7 +74,10 @@ export function useUpdateEntry() {
       );
       return response.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["homepage"] }),
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries({
+        queryKey: ["/api/entry", variables.id],
+      }),
   });
 }
 
@@ -103,6 +103,7 @@ export function useUpdateDraft() {
   });
 }
 
+// TODO useDeleteEntry fix bug
 export function useDeleteEntry() {
   const queryClient = useQueryClient();
 

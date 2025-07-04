@@ -9,5 +9,5 @@
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["Wechat"]
+  "cSpell.words": ["journaling", "Wechat"]
 }

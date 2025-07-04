@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/header";
-import StatsCards from "@/components/stats-cards";
 import EntryCard from "@/components/entry-card";
 import EntryModal from "@/components/entry-modal";
 import SearchOverlay from "@/components/search-overlay";
-import CalendarOverlay from "@/components/calendar-overlay";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useDraft, useEntry, useEntries } from "@/hooks/use-entries";
+import { useDraft, useEntries } from "@/hooks/use-entries";
 import Toolbar from "@/components/tool-bar";
-import { Entry } from "@shared/schema";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Journal() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -17,7 +16,55 @@ export default function Journal() {
   const [entryModalOpen, setEntryModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<number>(0);
 
-  const { data: entries = [], isLoading } = useEntries();
+  const queryClient = useQueryClient();
+  const [entries, setEntries] = useState<number[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  const refresh = () => {
+    setEntries([]);
+    setPage(0);
+    setHasMore(true);
+    loadInitialData();
+  };
+
+  const setQueryFn = (key: (string | number)[], data: any) => {
+    queryClient.setQueryData(key, data);
+  };
+
+  const loadInitialData = async () => {
+    setLoading(true);
+    try {
+      const [ids, hasMore] = await useEntries(0, setQueryFn);
+      setEntries(ids);
+      setHasMore(hasMore);
+      setPage(1);
+    } catch (err) {
+      console.error("Error loading initial data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMoreData = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const [ids, hasMore] = await useEntries(page, setQueryFn);
+      setEntries((prev) => [...prev, ...ids]);
+      setHasMore(hasMore);
+      setPage((prev) => prev + 1);
+    } catch (err) {
+      console.error("Error fetching more data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateEntry = async () => {
     const draft = await useDraft();
@@ -43,6 +90,7 @@ export default function Journal() {
         className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50" : "bg-gray-500/0"}`}
       ></div>
       <div
+        id="scrollableDiv"
         className={`flex h-full flex-col overflow-y-auto bg-[rgb(247,245,244)]`}
       >
         <Toolbar
@@ -77,36 +125,44 @@ export default function Journal() {
             </div>
 
             {/* Entries List */}
-            {isLoading ? (
-              <div className="space-y-6">
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="apple-shadow bg-card animate-pulse rounded-xl p-6"
-                  >
-                    <div className="mb-4 h-6 rounded bg-gray-200"></div>
-                    <div className="mb-2 h-4 rounded bg-gray-200"></div>
-                    <div className="h-4 w-3/4 rounded bg-gray-200"></div>
-                  </div>
-                ))}
-              </div>
-            ) : entries.length === 0 ? (
-              <div className="py-12 text-center">
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <p key={index} className="text-lg text-[hsl(215,4%,56%)]">
-                    No entries yet. Start your journaling journey today!
+            <InfiniteScroll
+              scrollableTarget="scrollableDiv"
+              dataLength={entries.length}
+              next={fetchMoreData}
+              hasMore={hasMore}
+              loader={
+                <div className="space-y-6">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="apple-shadow bg-card animate-pulse rounded-xl p-6"
+                    >
+                      <div className="mb-4 h-6 rounded bg-gray-200"></div>
+                      <div className="mb-2 h-4 rounded bg-gray-200"></div>
+                      <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+                    </div>
+                  ))}
+                </div>
+              }
+              endMessage={
+                <div className="py-12 text-center">
+                  <p className="text-lg text-[hsl(215,4%,56%)]">
+                    {entries.length === 0
+                      ? "No entries yet. Start your journaling journey today!"
+                      : "- end -"}
                   </p>
-                ))}
-              </div>
-            ) : (
-              entries.map((entryId) => (
+                </div>
+              }
+            >
+              {/* Entry Cards */}
+              {entries.map((entryId) => (
                 <EntryCard
                   key={entryId}
                   entryId={entryId}
                   onEdit={() => handleEditEntry(entryId)}
                 />
-              ))
-            )}
+              ))}
+            </InfiniteScroll>
           </div>
         </main>
 
@@ -133,6 +189,7 @@ export default function Journal() {
             open={entryModalOpen}
             onClose={handleEntryModalClose}
             entryId={editingEntry}
+            refresh={refresh}
           />
         )}
       </div>

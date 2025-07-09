@@ -3,7 +3,7 @@ import { apiRequest } from "@/lib/queryClient";
 import type { Entry, InsertEntry } from "@shared/schema";
 
 export async function useEntries(
-  page: number = 0,
+  page: number = 1,
   setQueryFn: (key: (string | number)[], data: any) => void,
 ): Promise<[number[], boolean]> {
   const response = await apiRequest("POST", "/api/entry?Action=GetEntries", {
@@ -47,7 +47,7 @@ export function useCreateEntryFromDraft() {
     }: { id: number } & Partial<InsertEntry>) => {
       const response = await apiRequest(
         "POST",
-        "/api/entry?Action=createEntryFromDraft",
+        "/api/entry?Action=CreateEntryFromDraft",
         { id, ...data },
       );
       return response.json();

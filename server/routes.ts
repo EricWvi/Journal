@@ -34,8 +34,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (action === "GetEntries") {
         const { page } = req.body;
         const entries = await storage.getEntries();
-        const hasMore = entries.length > (page + 1) * 10;
-        const entriesInPage = entries.slice(page * 10, (page + 1) * 10);
+        const pageSize = 6;
+        const hasMore = entries.length > page * pageSize;
+        const entriesInPage = entries.slice(
+          (page - 1) * pageSize,
+          page * pageSize,
+        );
         if (entriesInPage.length === 0) {
           return res.status(404).json({ message: "No entries found" });
         }
@@ -49,7 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         return res.json({ message: entry });
       }
-      if (action === "createEntryFromDraft") {
+      if (action === "CreateEntryFromDraft") {
         const { id, ...data } = req.body;
         const validatedData = insertEntrySchema.partial().parse(data);
         const entry = await storage.createEntryFromDraft(
@@ -117,8 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (action === "DeleteMedia") {
         const { ids } = req.body;
         ids.forEach((url: string) => {
-          const id = url.split("/").pop() || "";
-          const filePath = path.join("uploads", id);
+          const filePath = path.join("uploads", url);
           // Delete file from file system
           fs.unlink(filePath, (err) => {
             if (err) {

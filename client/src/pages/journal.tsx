@@ -40,10 +40,10 @@ export default function Journal() {
   const loadInitialData = async () => {
     setLoading(true);
     try {
-      const [ids, hasMore] = await useEntries(0, setQueryFn);
+      const [ids, hasMore] = await useEntries(1, setQueryFn);
       setEntries(ids);
       setHasMore(hasMore);
-      setPage(1);
+      setPage(2);
     } catch (err) {
       console.error("Error loading initial data:", err);
     } finally {

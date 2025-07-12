@@ -10,15 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NodeType } from "@/lib/html-parse";
 import { emojiClassName } from "./emoji-picker";
-import { useEntry } from "@/hooks/use-entries";
+import { EntryMeta, useEntry } from "@/hooks/use-entries";
 
 interface EntryCardProps {
-  entryId: number;
+  meta: EntryMeta;
   onEdit: () => void;
 }
 
-export default function EntryCard({ entryId, onEdit }: EntryCardProps) {
-  const { data: entry, isLoading } = useEntry(entryId);
+export default function EntryCard({ meta, onEdit }: EntryCardProps) {
+  const { data: entry, isLoading } = useEntry(meta.id);
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("en-US", {

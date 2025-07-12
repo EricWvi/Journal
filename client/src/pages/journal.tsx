@@ -5,7 +5,7 @@ import EntryModal from "@/components/entry-modal";
 import SearchOverlay from "@/components/search-overlay";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useDraft, useEntries } from "@/hooks/use-entries";
+import { EntryMeta, useDraft, useEntries } from "@/hooks/use-entries";
 import Toolbar from "@/components/tool-bar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ export default function Journal() {
   const [editingEntry, setEditingEntry] = useState<number>(0);
 
   const queryClient = useQueryClient();
-  const [entries, setEntries] = useState<number[]>([]);
+  const [entries, setEntries] = useState<EntryMeta[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,8 @@ export default function Journal() {
   const loadInitialData = async () => {
     setLoading(true);
     try {
-      const [ids, hasMore] = await useEntries(1, setQueryFn);
-      setEntries(ids);
+      const [metas, hasMore] = await useEntries(1, setQueryFn);
+      setEntries(metas);
       setHasMore(hasMore);
       setPage(2);
     } catch (err) {
@@ -55,8 +55,8 @@ export default function Journal() {
     if (loading) return;
     setLoading(true);
     try {
-      const [ids, hasMore] = await useEntries(page, setQueryFn);
-      setEntries((prev) => [...prev, ...ids]);
+      const [metas, hasMore] = await useEntries(page, setQueryFn);
+      setEntries((prev) => [...prev, ...metas]);
       setHasMore(hasMore);
       setPage((prev) => prev + 1);
     } catch (err) {
@@ -137,11 +137,11 @@ export default function Journal() {
               }
             >
               {/* Entry Cards */}
-              {entries.map((entryId) => (
+              {entries.map((entry) => (
                 <EntryCard
-                  key={entryId}
-                  entryId={entryId}
-                  onEdit={() => handleEditEntry(entryId)}
+                  key={entry.id}
+                  meta={entry}
+                  onEdit={() => handleEditEntry(entry.id)}
                 />
               ))}
             </InfiniteScroll>

@@ -7,3 +7,13 @@ export async function outTrash(ids: string[]) {
   const data = await response.json();
   console.log("outTrash response:", data);
 }
+
+export async function getEntryDate(): Promise<string[]> {
+  const response = await apiRequest(
+    "POST",
+    "/api/media?Action=GetEntryDate",
+    {},
+  );
+  const data = await response.json();
+  return data.message.entryDates;
+}

@@ -62,6 +62,12 @@ export class MemStorage implements IStorage {
     return this.entries.get(id);
   }
 
+  async getEntryDate(): Promise<string[]> {
+    return Array.from(this.entries.values())
+      .filter((entry) => entry.visibility !== Visibility.DRAFT)
+      .map((entry) => entry.createdAt.toISOString());
+  }
+
   async createDraft(): Promise<Entry> {
     const id = this.currentId++;
     const now = new Date();

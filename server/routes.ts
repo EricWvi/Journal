@@ -50,6 +50,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         return res.json({ message: entry });
       }
+      if (action === "GetEntryDate") {
+        const dates = await storage.getEntryDate();
+        return res.json({ message: { entryDates: dates } });
+      }
       if (action === "CreateEntryFromDraft") {
         const { id, ...data } = req.body;
         const validatedData = insertEntrySchema.partial().parse(data);

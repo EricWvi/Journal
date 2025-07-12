@@ -40,9 +40,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           (page - 1) * pageSize,
           page * pageSize,
         );
-        if (entriesInPage.length === 0) {
-          return res.status(404).json({ message: "No entries found" });
-        }
         return res.json({ message: { entries: entriesInPage, hasMore } });
       }
       if (action === "GetEntry") {

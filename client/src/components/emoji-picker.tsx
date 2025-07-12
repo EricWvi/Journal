@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { wechatEmojis, type WechatEmoji } from "@/lib/wechat-emoji";
+import "./emoji.css";
 
 type Props = {
   editorFocus: () => void;

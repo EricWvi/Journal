@@ -80,65 +80,62 @@ export const dumpHtmlNodes = (nodes: NodeListOf<ChildNode>): Node[] => {
         style &= ~Style.BOLD;
       }
       if (element.tagName === "IMG") {
-        if (customNodes.length === 0) {
-          customNodes.push({ type: NodeType.BREAK });
+        if (l.length === 0) {
+          l.push({ type: NodeType.BREAK });
         }
         const src = (element as HTMLImageElement).src;
         const link = src.substring(src.lastIndexOf("/") + 1);
-        customNodes.push({
+        l.push({
           type: NodeType.IMAGE,
           content: link,
         });
       } else if (element.tagName === "BR") {
-        customNodes.push({ type: NodeType.BREAK });
+        l.push({ type: NodeType.BREAK });
       } else if (element.tagName === "SPAN") {
         if (element.classList.contains("wechat-emoji")) {
-          customNodes.push({
+          l.push({
             type: NodeType.EMOJI,
             content: element.getAttribute("data-emoji-id") || "",
           });
         } else {
           node.childNodes.forEach((n) => {
-            traverse(n, style, customNodes);
+            traverse(n, style, l);
           });
         }
       } else if (element.tagName === "DIV") {
-        if (
-          customNodes.length > 0 &&
-          customNodes[customNodes.length - 1].type === NodeType.TEXT
-        ) {
-          customNodes.push({ type: NodeType.BREAK });
+        if (l.length > 0 && l[l.length - 1].type === NodeType.TEXT) {
+          l.push({ type: NodeType.BREAK });
         }
         node.childNodes.forEach((n) => {
-          traverse(n, style, customNodes);
+          traverse(n, style, l);
         });
-        customNodes.push({ type: NodeType.BREAK });
+        l.push({ type: NodeType.BREAK });
       } else if (element.tagName === "B") {
         node.childNodes.forEach((n) => {
-          traverse(n, style | Style.BOLD, customNodes);
+          traverse(n, style | Style.BOLD, l);
         });
       } else if (element.tagName === "I") {
         node.childNodes.forEach((n) => {
-          traverse(n, style | Style.ITALIC, customNodes);
+          traverse(n, style | Style.ITALIC, l);
         });
       } else if (element.tagName === "U") {
         node.childNodes.forEach((n) => {
-          traverse(n, style | Style.UNDERLINE, customNodes);
+          traverse(n, style | Style.UNDERLINE, l);
         });
       } else if (element.tagName === "MARK") {
         node.childNodes.forEach((n) => {
-          traverse(n, style | Style.MARK, customNodes);
+          traverse(n, style | Style.MARK, l);
         });
       } else if (element.tagName === "STRIKE") {
         node.childNodes.forEach((n) => {
-          traverse(n, style | Style.STRIKETHROUGH, customNodes);
+          traverse(n, style | Style.STRIKETHROUGH, l);
         });
       } else {
         alert("Unsupported tag name: " + element.tagName);
       }
     } else if (node.nodeType === Node.TEXT_NODE) {
       if (node.textContent && node.textContent.trim() !== "") {
-        customNodes.push({
+        l.push({
           type: NodeType.TEXT,
           content: node.textContent,
           style: new TextStyle(style),

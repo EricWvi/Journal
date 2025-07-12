@@ -84,14 +84,14 @@ export default function Journal() {
 
   return (
     <div
-      className={`relative h-screen w-full origin-top overflow-hidden transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
+      className={`relative h-screen w-full origin-top transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
     >
       <div
         className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50" : "bg-gray-500/0"}`}
       ></div>
       <div
         id="scrollableDiv"
-        className={`flex h-full flex-col overflow-y-auto bg-[rgb(247,245,244)]`}
+        className={`bg-background flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
       >
         <Toolbar
           onSearchToggle={() => setSearchOpen(!searchOpen)}
@@ -106,24 +106,6 @@ export default function Journal() {
           {/* <StatsCards entries={entries} /> */}
 
           <div className="space-y-6">
-            {/* Today's Entry Prompt */}
-            <div
-              className="apple-shadow bg-card cursor-pointer rounded-xl border-2 border-dashed border-gray-200 p-6 transition-colors hover:border-[hsl(207,90%,54%)]"
-              onClick={handleCreateEntry}
-            >
-              <div className="text-center">
-                <div className="bg-opacity-10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(207,90%,54%)]">
-                  <Plus className="text-2xl text-[hsl(207,90%,54%)]" />
-                </div>
-                <h3 className="text-foreground mb-2 text-lg font-semibold">
-                  Start today's entry
-                </h3>
-                <p className="text-[hsl(215,4%,56%)]">
-                  What's on your mind today?
-                </p>
-              </div>
-            </div>
-
             {/* Entries List */}
             <InfiniteScroll
               scrollableTarget="scrollableDiv"

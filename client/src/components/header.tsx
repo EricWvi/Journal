@@ -18,11 +18,11 @@ export default function Header({
   });
 
   return (
-    <header className="apple-shadow border-b border-border bg-card rounded-lg">
+    <header>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-semibold text-foreground">Journal</h1>
+            <h1 className="text-foreground text-2xl font-semibold">Journal</h1>
             <div className="hidden items-center space-x-2 text-sm text-[hsl(215,4%,56%)] md:flex">
               <span>Today</span>
               <span className="text-xs">•</span>
@@ -35,7 +35,7 @@ export default function Header({
               variant="ghost"
               size="sm"
               onClick={onSearchToggle}
-              className="p-2 text-[hsl(215,4%,56%)] hover:text-foreground"
+              className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
             >
               <Search className="text-lg" />
             </Button>
@@ -44,7 +44,7 @@ export default function Header({
               variant="ghost"
               size="sm"
               onClick={onCalendarToggle}
-              className="p-2 text-[hsl(215,4%,56%)] hover:text-foreground"
+              className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
             >
               <Calendar className="text-lg" />
             </Button>

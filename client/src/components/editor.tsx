@@ -25,10 +25,11 @@ export interface EditorHandle {
 }
 
 type Props = {
+  ref?: React.Ref<EditorHandle>;
   editingEntry: Entry | null;
 };
 
-const WYSIWYG = forwardRef((props: Props, ref) => {
+const WYSIWYG = (props: Props) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -121,7 +122,7 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
     return [[], [], []];
   };
 
-  useImperativeHandle(ref, () => ({
+  useImperativeHandle(props.ref, () => ({
     dumpEditorContent,
   }));
 
@@ -225,6 +226,6 @@ const WYSIWYG = forwardRef((props: Props, ref) => {
       <img ref={imgRef}></img>
     </div>
   );
-});
+};
 
 export default WYSIWYG;

@@ -1,0 +1,23 @@
+.entries-icon {
+  fill: var(--color-entries-icon);
+}
+
+.bg-entries-icon {
+  stroke: var(--color-background);
+}
+
+.quote-icon {
+  fill: var(--color-quote-icon);
+}
+
+.quote-stroke {
+  stroke: var(--color-quote-icon);
+}
+
+.calendar-icon {
+  fill: var(--color-calendar-icon);
+}
+
+.bg-calendar-icon {
+  fill: var(--color-background);
+}

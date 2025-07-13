@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import EntryCard from "@/components/entry-card";
 import EntryModal from "@/components/entry-modal";
-import SearchOverlay from "@/components/search-overlay";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -14,6 +13,7 @@ import {
 import Toolbar from "@/components/tool-bar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQueryClient } from "@tanstack/react-query";
+import JournalingIcons from "@/components/stats";
 
 export default function Journal() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -97,7 +97,7 @@ export default function Journal() {
       ></div>
       <div
         id="scrollableDiv"
-        className={`bg-background flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
+        className={`bg-background dark:bg-background flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
       >
         <Toolbar
           onSearchToggle={() => setSearchOpen(!searchOpen)}
@@ -107,7 +107,7 @@ export default function Journal() {
           onSearchToggle={() => setSearchOpen(!searchOpen)}
           onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
         />
-
+        <JournalingIcons />
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           {/* <StatsCards entries={entries} /> */}
 
@@ -194,7 +194,7 @@ export default function Journal() {
         </div>
 
         {/* Overlays and Modals */}
-        <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+        {/* <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} /> */}
         {/* <CalendarOverlay
           open={calendarOpen}
           onClose={() => setCalendarOpen(false)}

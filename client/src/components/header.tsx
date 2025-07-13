@@ -1,5 +1,13 @@
-import { Calendar, Search, User } from "lucide-react";
+import { Calendar as CalendarIcon, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import JournalingIcons from "@/components/stats";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useState } from "react";
 
 interface HeaderProps {
   onSearchToggle: () => void;
@@ -16,6 +24,18 @@ export default function Header({
     month: "long",
     day: "numeric",
   });
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState<{
+    from: Date | undefined;
+    to?: Date | undefined;
+  }>({ from: undefined, to: undefined });
+
+  const handleDateSelect = (
+    range: { from: Date | undefined; to?: Date | undefined } | undefined,
+  ) => {
+    setDate(range ?? { from: undefined, to: undefined });
+    setOpen(false);
+  };
 
   return (
     <header>
@@ -40,14 +60,24 @@ export default function Header({
               <Search className="text-lg" />
             </Button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCalendarToggle}
-              className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
-            >
-              <Calendar className="text-lg" />
-            </Button>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  data-empty={!date}
+                  className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
+                >
+                  <CalendarIcon className="text-lg" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={date}
+                  onSelect={handleDateSelect}
+                />
+              </PopoverContent>
+            </Popover>
 
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(207,90%,54%)]">
               <User className="text-sm text-white" />

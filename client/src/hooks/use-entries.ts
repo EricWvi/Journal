@@ -9,12 +9,20 @@ export interface EntryMeta {
   day: number;
 }
 
+export interface QueryCondition {
+  field: string; // e.g., "date", "tag", "place"
+  operator: string; // e.g., "eq", "in", "between", "like"
+  value: any; // string, number, array, etc.
+}
+
 export async function useEntries(
   page: number = 1,
+  condition: QueryCondition[] = [],
   setQueryFn: (key: (string | number)[], data: any) => void,
 ): Promise<[EntryMeta[], boolean]> {
   const response = await apiRequest("POST", "/api/entry?Action=GetEntries", {
     page,
+    condition,
   });
   const data = await response.json();
   const metas = (data.message.entries as Entry[]).map((entry) => {

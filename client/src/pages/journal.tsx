@@ -5,7 +5,12 @@ import EntryModal from "@/components/entry-modal";
 import SearchOverlay from "@/components/search-overlay";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { EntryMeta, useDraft, useEntries } from "@/hooks/use-entries";
+import {
+  EntryMeta,
+  QueryCondition,
+  useDraft,
+  useEntries,
+} from "@/hooks/use-entries";
 import Toolbar from "@/components/tool-bar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,6 +23,7 @@ export default function Journal() {
 
   const queryClient = useQueryClient();
   const [entries, setEntries] = useState<EntryMeta[]>([]);
+  const [condition, setCondition] = useState<QueryCondition[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,7 +46,7 @@ export default function Journal() {
   const loadInitialData = async () => {
     setLoading(true);
     try {
-      const [metas, hasMore] = await useEntries(1, setQueryFn);
+      const [metas, hasMore] = await useEntries(1, condition, setQueryFn);
       setEntries(metas);
       setHasMore(hasMore);
       setPage(2);
@@ -55,7 +61,7 @@ export default function Journal() {
     if (loading) return;
     setLoading(true);
     try {
-      const [metas, hasMore] = await useEntries(page, setQueryFn);
+      const [metas, hasMore] = await useEntries(page, condition, setQueryFn);
       setEntries((prev) => [...prev, ...metas]);
       setHasMore(hasMore);
       setPage((prev) => prev + 1);
@@ -137,13 +143,41 @@ export default function Journal() {
               }
             >
               {/* Entry Cards */}
-              {entries.map((entry) => (
-                <EntryCard
-                  key={entry.id}
-                  meta={entry}
-                  onEdit={() => handleEditEntry(entry.id)}
-                />
-              ))}
+              {entries
+                .map((entry, idx, arr) => {
+                  const prev = arr[idx - 1];
+                  const next = arr[idx + 1];
+                  const showYear = !prev || entry.year !== prev.year;
+                  const showMonth =
+                    !prev ||
+                    entry.year !== prev.year ||
+                    entry.month !== prev.month;
+                  const showTime =
+                    (prev &&
+                      entry.year === prev.year &&
+                      entry.month === prev.month &&
+                      entry.day === prev.day) ||
+                    (next &&
+                      entry.year === next.year &&
+                      entry.month === next.month &&
+                      entry.day === next.day);
+                  return {
+                    entry,
+                    showYear,
+                    showMonth,
+                    showTime,
+                  };
+                })
+                .map(({ entry, showYear, showMonth, showTime }) => (
+                  <EntryCard
+                    key={entry.id}
+                    meta={entry}
+                    showYear={showYear}
+                    showMonth={showMonth}
+                    showTime={showTime}
+                    onEdit={() => handleEditEntry(entry.id)}
+                  />
+                ))}
             </InfiniteScroll>
           </div>
         </main>

@@ -21,3 +21,7 @@
 .bg-calendar-icon {
   fill: var(--color-background);
 }
+
+.stats-font {
+  color: var(--color-stats-font);
+}

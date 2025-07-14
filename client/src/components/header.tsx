@@ -1,7 +1,7 @@
 import { Calendar as CalendarIcon, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import JournalingIcons from "@/components/stats";
+import Stats from "@/components/stats";
 import {
   Popover,
   PopoverContent,
@@ -40,9 +40,9 @@ export default function Header({
   return (
     <header>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="mt-10 flex h-12 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-foreground text-2xl font-semibold">Journal</h1>
+            <h1 className="text-foreground text-3xl font-semibold">Journal</h1>
             <div className="hidden items-center space-x-2 text-sm text-[hsl(215,4%,56%)] md:flex">
               <span>Today</span>
               <span className="text-xs">•</span>
@@ -84,6 +84,8 @@ export default function Header({
             </div>
           </div>
         </div>
+
+        <Stats />
       </div>
     </header>
   );

@@ -13,7 +13,6 @@ import {
 import Toolbar from "@/components/tool-bar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQueryClient } from "@tanstack/react-query";
-import JournalingIcons from "@/components/stats";
 
 export default function Journal() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -107,7 +106,6 @@ export default function Journal() {
           onSearchToggle={() => setSearchOpen(!searchOpen)}
           onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
         />
-        <JournalingIcons />
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           {/* <StatsCards entries={entries} /> */}
 

@@ -18,12 +18,12 @@ export default function Toolbar({
 
     const handleScroll = () => {
       const scrollY = (container as HTMLElement).scrollTop;
-      if (scrollY <= 20) {
+      if (scrollY <= 80) {
         setOpacity(0);
       } else if (scrollY >= 100) {
         setOpacity(1);
       } else {
-        const ratio = (scrollY - 20) / (100 - 20);
+        const ratio = (scrollY - 80) / (100 - 80);
         setOpacity(ratio);
       }
     };
@@ -34,7 +34,7 @@ export default function Toolbar({
 
   return (
     <header
-      className={`fixed top-0 z-50 h-auto w-full shrink-0 bg-zinc-50/80 shadow-md backdrop-blur-lg transition-opacity duration-300 ${opacity > 0.4 ? "" : "pointer-events-none"}`}
+      className={`fixed top-0 z-50 h-auto w-full shrink-0 bg-zinc-50/80 shadow-md backdrop-blur-lg transition-opacity duration-300 ${opacity > 0.6 ? "" : "pointer-events-none"}`}
       style={{ opacity }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

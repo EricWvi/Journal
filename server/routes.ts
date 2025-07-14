@@ -5,7 +5,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { insertEntrySchema } from "@shared/schema";
+import { Entry, insertEntrySchema } from "@shared/schema";
+import { QueryCondition } from "@/hooks/use-entries";
 
 // Configure multer for photo uploads
 const upload = multer({
@@ -32,8 +33,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({ message: draft });
       }
       if (action === "GetEntries") {
-        const { page } = req.body;
-        const entries = await storage.getEntries();
+        const { page, c } = req.body;
+        const condition: QueryCondition[] = c || [];
+        const all = await storage.getEntries();
+        const entries = all.filter((entry: Entry) => {
+          return condition.every((cond) => {
+            if (cond.field === "date") {
+              const entryDate = new Date(entry.createdAt);
+              switch (cond.operator) {
+                case "eq":
+                  const valueDate = new Date(cond.value);
+                  return (
+                    entryDate.getFullYear() === valueDate.getFullYear() &&
+                    entryDate.getMonth() === valueDate.getMonth() &&
+                    entryDate.getDate() === valueDate.getDate()
+                  );
+                case "in":
+                  const [left, right] = cond.value;
+                  const leftDate = new Date(left);
+                  const rightDate = new Date(right);
+                  return entryDate >= leftDate && entryDate <= rightDate;
+                default:
+                  return false;
+              }
+            }
+            if (cond.field === "tag") {
+              return (
+                entry.payload.tags && entry.payload.tags.includes(cond.value)
+              );
+            }
+            if (cond.field === "place") {
+              return (
+                entry.payload.location &&
+                Array.isArray(cond.value) &&
+                entry.payload.location.length >= cond.value.length &&
+                cond.value.every(
+                  (loc: string, idx: number) =>
+                    entry.payload.location &&
+                    loc === entry.payload.location[idx],
+                )
+              );
+            }
+          });
+        });
         const pageSize = 6;
         const hasMore = entries.length > page * pageSize;
         const entriesInPage = entries.slice(
@@ -49,6 +91,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(404).json({ message: "Entry not found" });
         }
         return res.json({ message: entry });
+      }
+      if (action === "GetEntryDate") {
+        const dates = await storage.getEntryDate();
+        return res.json({ message: { entryDates: dates } });
       }
       if (action === "CreateEntryFromDraft") {
         const { id, ...data } = req.body;

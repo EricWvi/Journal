@@ -2,19 +2,40 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Entry, InsertEntry } from "@shared/schema";
 
+export interface EntryMeta {
+  id: number;
+  year: number;
+  month: number;
+  day: number;
+}
+
+export interface QueryCondition {
+  field: string; // e.g., "date", "tag", "place"
+  operator: string; // e.g., "eq", "in", "between", "like"
+  value: any; // string, number, array, etc.
+}
+
 export async function useEntries(
   page: number = 1,
+  condition: QueryCondition[] = [],
   setQueryFn: (key: (string | number)[], data: any) => void,
-): Promise<[number[], boolean]> {
+): Promise<[EntryMeta[], boolean]> {
   const response = await apiRequest("POST", "/api/entry?Action=GetEntries", {
     page,
+    condition,
   });
   const data = await response.json();
-  const ids = (data.message.entries as Entry[]).map((entry) => {
+  const metas = (data.message.entries as Entry[]).map((entry) => {
     setQueryFn(["/api/entry", entry.id], entry);
-    return entry.id;
+    const time = new Date(entry.createdAt);
+    return {
+      id: entry.id,
+      year: time.getFullYear(),
+      month: time.getMonth() + 1,
+      day: time.getDate(),
+    };
   });
-  return [ids, data.message.hasMore];
+  return [metas, data.message.hasMore];
 }
 
 export function useEntry(id: number) {

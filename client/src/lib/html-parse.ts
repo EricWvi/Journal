@@ -80,7 +80,7 @@ export const dumpHtmlNodes = (nodes: NodeListOf<ChildNode>): Node[] => {
         style &= ~Style.BOLD;
       }
       if (element.tagName === "IMG") {
-        if (l.length === 0) {
+        if (l.length === 0 || l[l.length - 1].type !== NodeType.BREAK) {
           l.push({ type: NodeType.BREAK });
         }
         const src = (element as HTMLImageElement).src;

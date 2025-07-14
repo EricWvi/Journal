@@ -16,6 +16,11 @@ export enum Visibility {
   DRAFT = "DRAFT",
 }
 
+export interface Info {
+  tags?: string[];
+  location?: string[];
+}
+
 export const entries = pgTable("entry", {
   id: serial("id").primaryKey(),
   creatorId: integer("creator_id").default(1).notNull(),
@@ -25,7 +30,7 @@ export const entries = pgTable("entry", {
 
   content: jsonb("content").$type<Node[]>().default([]).notNull(),
   visibility: text("visibility").default(Visibility.PUBLIC).notNull(),
-  payload: jsonb("payload").default({}).notNull(),
+  payload: jsonb("payload").$type<Info>().default({}).notNull(),
 });
 
 export const insertEntrySchema = createInsertSchema(entries).omit({

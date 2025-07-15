@@ -219,7 +219,7 @@ const WYSIWYG = (props: Props) => {
           ref={editorRef}
           contentEditable
           onBlur={handleBlur}
-          className="h-[40vh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
+          className="h-[40%] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
         ></div>
       </div>

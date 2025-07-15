@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./journal.css";
 import Header from "@/components/header";
 import EntryCard from "@/components/entry-card";
 import EntryModal from "@/components/entry-modal";
@@ -6,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
   EntryMeta,
+  isToday,
+  isYesterday,
   QueryCondition,
   useDraft,
   useEntries,
@@ -96,7 +99,7 @@ export default function Journal() {
       ></div>
       <div
         id="scrollableDiv"
-        className={`bg-background dark:bg-background flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
+        className={`journal-bg flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
       >
         <Toolbar
           onSearchToggle={() => setSearchOpen(!searchOpen)}
@@ -106,78 +109,118 @@ export default function Journal() {
           onSearchToggle={() => setSearchOpen(!searchOpen)}
           onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
         />
-        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          {/* <StatsCards entries={entries} /> */}
-
-          <div className="space-y-6">
-            {/* Entries List */}
-            <InfiniteScroll
-              scrollableTarget="scrollableDiv"
-              dataLength={entries.length}
-              next={fetchMoreData}
-              hasMore={hasMore}
-              loader={
-                <div className="space-y-6">
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="apple-shadow bg-card animate-pulse rounded-xl p-6"
-                    >
-                      <div className="mb-4 h-6 rounded bg-gray-200"></div>
-                      <div className="mb-2 h-4 rounded bg-gray-200"></div>
-                      <div className="h-4 w-3/4 rounded bg-gray-200"></div>
-                    </div>
-                  ))}
-                </div>
-              }
-              endMessage={
-                <div className="py-12 text-center">
-                  <p className="text-lg text-[hsl(215,4%,56%)]">
-                    {entries.length === 0
-                      ? "No entries yet. Start your journaling journey today!"
-                      : "- end -"}
-                  </p>
-                </div>
-              }
-            >
-              {/* Entry Cards */}
-              {entries
+        <main className="w-full max-w-4xl flex-1">
+          {/* Entries List */}
+          <InfiniteScroll
+            scrollableTarget="scrollableDiv"
+            className="px-5 sm:px-7 lg:px-9"
+            dataLength={entries.length}
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={
+              <div className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="entry-card-shadow bg-entry-card animate-pulse rounded-lg p-5"
+                  >
+                    <div className="mb-4 h-6 rounded bg-gray-200 dark:bg-gray-800"></div>
+                    <div className="mb-2 h-4 rounded bg-gray-200 dark:bg-gray-800"></div>
+                    <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-800"></div>
+                  </div>
+                ))}
+              </div>
+            }
+            endMessage={
+              <div className="py-12 text-center">
+                <p className="text-lg text-[hsl(215,4%,56%)]">
+                  {entries.length === 0
+                    ? "No entries yet. Start your journaling journey today!"
+                    : "- end -"}
+                </p>
+              </div>
+            }
+          >
+            {/* Entry Cards */}
+            {[
+              ...entries
+                .filter((entry) => isToday(entry) || isYesterday(entry))
                 .map((entry, idx, arr) => {
                   const prev = arr[idx - 1];
                   const next = arr[idx + 1];
-                  const showYear = !prev || entry.year !== prev.year;
-                  const showMonth =
-                    !prev ||
-                    entry.year !== prev.year ||
-                    entry.month !== prev.month;
-                  const showTime =
+                  const showToday = isToday(entry) && !prev;
+                  const showYesterday =
+                    isYesterday(entry) && (!prev || entry.day !== prev.day);
+                  const showTime = Boolean(
                     (prev &&
                       entry.year === prev.year &&
                       entry.month === prev.month &&
                       entry.day === prev.day) ||
-                    (next &&
-                      entry.year === next.year &&
-                      entry.month === next.month &&
-                      entry.day === next.day);
+                      (next &&
+                        entry.year === next.year &&
+                        entry.month === next.month &&
+                        entry.day === next.day),
+                  );
+                  return {
+                    entry,
+                    showYear: false,
+                    showMonth: false,
+                    showToday,
+                    showYesterday,
+                    showTime,
+                  };
+                }),
+              ...entries
+                .filter((entry) => !isToday(entry) && !isYesterday(entry))
+                .map((entry, idx, arr) => {
+                  const prev = arr[idx - 1];
+                  const next = arr[idx + 1];
+                  const showYear = entry.year !== new Date().getFullYear();
+                  const showMonth =
+                    !prev ||
+                    entry.year !== prev.year ||
+                    entry.month !== prev.month;
+                  const showTime = Boolean(
+                    (prev &&
+                      entry.year === prev.year &&
+                      entry.month === prev.month &&
+                      entry.day === prev.day) ||
+                      (next &&
+                        entry.year === next.year &&
+                        entry.month === next.month &&
+                        entry.day === next.day),
+                  );
                   return {
                     entry,
                     showYear,
                     showMonth,
+                    showToday: false,
+                    showYesterday: false,
                     showTime,
                   };
-                })
-                .map(({ entry, showYear, showMonth, showTime }) => (
-                  <EntryCard
-                    key={entry.id}
-                    meta={entry}
-                    showYear={showYear}
-                    showMonth={showMonth}
-                    showTime={showTime}
-                    onEdit={() => handleEditEntry(entry.id)}
-                  />
-                ))}
-            </InfiniteScroll>
-          </div>
+                }),
+            ].map(
+              ({
+                entry,
+                showYear,
+                showMonth,
+                showToday,
+                showYesterday,
+                showTime,
+              }) => (
+                <EntryCard
+                  key={entry.id}
+                  meta={entry}
+                  showYear={showYear}
+                  showMonth={showMonth}
+                  showToday={showToday}
+                  showYes={showYesterday}
+                  showTime={showTime}
+                  onEdit={() => handleEditEntry(entry.id)}
+                />
+              ),
+            )}
+          </InfiniteScroll>
         </main>
 
         {/* Floating Action Button */}

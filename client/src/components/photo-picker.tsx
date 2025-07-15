@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import imageCompression from "browser-image-compression";
 import { createRoot } from "react-dom/client";
+import { formatMediaUrl } from "@/hooks/use-apis";
 
 type Props = {
   editorFocus: () => void;
@@ -23,13 +24,13 @@ const PhotoPicker = ({ editorFocus }: Props) => {
     };
     const compressedFiles: File[] = await Promise.all(
       Array.from(files).map(async (file) => {
-      try {
-        const compressed = await imageCompression(file, options);
-        // Preserve original file name
-        return new File([compressed], file.name, { type: compressed.type });
-      } catch (error) {
-        return file;
-      }
+        try {
+          const compressed = await imageCompression(file, options);
+          // Preserve original file name
+          return new File([compressed], file.name, { type: compressed.type });
+        } catch (error) {
+          return file;
+        }
       }),
     );
 
@@ -116,7 +117,7 @@ export const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
     <img
       className="h-full w-full object-contain"
-      src={"/api/m/" + imgSrc}
+      src={formatMediaUrl(imgSrc)}
       alt="img"
     />
   );

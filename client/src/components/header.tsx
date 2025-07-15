@@ -43,7 +43,7 @@ export default function Header({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-10 mb-1 flex h-12 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-foreground text-3xl font-semibold">Journal</h1>
+            <h1 className="text-foreground text-3xl font-bold">Journal</h1>
             <div className="hidden items-center space-x-2 text-sm text-[hsl(215,4%,56%)] md:flex">
               <span>Today</span>
               <span className="text-xs">•</span>

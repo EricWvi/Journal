@@ -1,0 +1,11 @@
+.journal-bg {
+  background-image: linear-gradient(
+    to bottom,
+    var(--background-start),
+    var(--background-end)
+  );
+}
+
+.entry-card-shadow {
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
+}

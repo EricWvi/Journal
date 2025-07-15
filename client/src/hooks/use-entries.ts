@@ -9,6 +9,26 @@ export interface EntryMeta {
   day: number;
 }
 
+// isToday function to check if the entry is today
+export function isToday(entry: EntryMeta): boolean {
+  const today = new Date();
+  return (
+    entry.year === today.getFullYear() &&
+    entry.month === today.getMonth() + 1 &&
+    entry.day === today.getDate()
+  );
+}
+
+export function isYesterday(entry: EntryMeta): boolean {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return (
+    entry.year === yesterday.getFullYear() &&
+    entry.month === yesterday.getMonth() + 1 &&
+    entry.day === yesterday.getDate()
+  );
+}
+
 export interface QueryCondition {
   field: string; // e.g., "date", "tag", "place"
   operator: string; // e.g., "eq", "in", "between", "like"

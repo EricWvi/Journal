@@ -25,3 +25,15 @@
 .stats-font {
   color: var(--color-stats-font);
 }
+
+.svg-more-icon {
+  fill: var(--color-foreground);
+}
+
+.svg-search-icon {
+  stroke: var(--color-foreground);
+}
+
+.search-icon-bg {
+  background-color: var(--color-search-icon);
+}

@@ -42,6 +42,7 @@
   --color-calendar-icon: var(--calendar-icon);
   --color-vertical-bar: var(--vertical-bar);
   --color-stats-font: var(--stats-font);
+  --color-search-icon: var(--search-icon-bg);
 }
 
 :root {
@@ -78,11 +79,14 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  --background-start: oklch(0.9714 0.0025 48.72);
+  --background-end: oklch(0.9497 0.0113 321.32);
   --entries-icon: oklch(0.7161 0.1344 273.61);
   --quote-icon: oklch(0.7119 0.1009 19.87);
   --calendar-icon: oklch(0.5707 0.093 286.05);
   --vertical-bar: oklch(0.8577 0.0044 17.24);
   --stats-font: oklch(0.6219 0.0046 301.37);
+  --search-icon-bg: oklch(0.9132 0.0045 0.01);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -119,11 +123,14 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
 
+    --background-start: oklch(0.1512 0.0235 283.23);
+    --background-end: oklch(0.2602 0.0486 318.74);
     --entries-icon: oklch(0.6322 0.1385 272.52);
     --quote-icon: oklch(0.6294 0.1044 20.43);
     --calendar-icon: oklch(0.4814 0.0966 285.15);
     --vertical-bar: oklch(0.2889 0.0127 292.14);
     --stats-font: oklch(0.661 0.0161 290.13);
+    --search-icon-bg: oklch(0.3019 0.0161 290.5);
   }
 }
 

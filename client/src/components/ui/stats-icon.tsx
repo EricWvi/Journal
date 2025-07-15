@@ -34,7 +34,7 @@ export const Entries = () => (
       y="4.5"
       rx="6"
       className="bg-entries-icon"
-      stroke-width="3"
+      strokeWidth="3"
     />
     <rect
       id="svg-rect-4"
@@ -53,7 +53,7 @@ export const Entries = () => (
       y="11"
       rx="6"
       className="bg-entries-icon"
-      stroke-width="4"
+      strokeWidth="4"
     />
   </svg>
 );
@@ -77,8 +77,8 @@ export const Quote = () => (
       id="svg-quote-3"
       d="M9.9909 47.5009C9.9909 47.5009 -1.50914 36.5009 4.99089 20.5009C11.4909 4.50094 25.9909 3.00092 25.9909 3.00092"
       className="quote-stroke"
-      stroke-linecap="round"
-      stroke-width="6"
+      strokeLinecap="round"
+      strokeWidth="6"
     />
     <circle
       id="svg-quote-4"
@@ -91,8 +91,8 @@ export const Quote = () => (
       id="svg-quote-5"
       d="M55.9909 47.5009C55.9909 47.5009 44.4909 36.5009 50.9909 20.5009C57.4909 4.50094 71.9909 3.00092 71.9909 3.00092"
       className="quote-stroke"
-      stroke-linecap="round"
-      stroke-width="6"
+      strokeLinecap="round"
+      strokeWidth="6"
     />
   </svg>
 );
@@ -196,6 +196,51 @@ export const Calendar = () => (
   </svg>
 );
 
+export const Search = () => (
+  <svg
+    viewBox="0 0 60 60"
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="100%"
+    fill="none"
+  >
+    <g id="search">
+      <circle
+        id="search-14"
+        cx="26"
+        cy="27"
+        r="17.5"
+        className="svg-search-icon"
+        strokeWidth="6"
+      />
+      <path
+        id="search-1"
+        d="M0 0L16.2789 0"
+        className="svg-search-icon"
+        strokeLinecap="round"
+        strokeWidth="9"
+        transform="matrix(0.737154,0.675725,-0.675725,0.737154,39,41)"
+      />
+    </g>
+  </svg>
+);
+
+export const More = () => (
+  <svg
+    viewBox="0 0 60 60"
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="100%"
+    fill="none"
+  >
+    <g id="more">
+      <circle id="more14" cx="10" cy="30" r="6" className="svg-more-icon" />
+      <circle id="more15" cx="30" cy="30" r="6" className="svg-more-icon" />
+      <circle id="more16" cx="50" cy="30" r="6" className="svg-more-icon" />
+    </g>
+  </svg>
+);
+
 interface IconProps {
   className?: string;
 }
@@ -204,7 +249,7 @@ export const Icon = ({
   className = "",
   children,
 }: IconProps & { children?: React.ReactNode }) => (
-  <div className={"ml-[2px] h-4 w-4 " + className}>{children}</div>
+  <div className={className}>{children}</div>
 );
 
 export const VerticalBar = ({ className }: IconProps) => (

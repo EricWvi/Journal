@@ -14,7 +14,7 @@ const Stats = () => {
     <div className="flex items-center space-x-2">
       <div className="mr-4 flex flex-col">
         <div className="flex items-center leading-none">
-          <Icon className="mr-[6px]">
+          <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Entries />
           </Icon>
           <Number>12</Number>
@@ -26,7 +26,7 @@ const Stats = () => {
 
       <div className="mr-4 flex flex-col">
         <div className="flex items-center leading-none">
-          <Icon className="mr-[6px]">
+          <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Quote />
           </Icon>
           <Number>3,658</Number>
@@ -38,7 +38,7 @@ const Stats = () => {
 
       <div className="mr-4 flex flex-col">
         <div className="flex items-center leading-none">
-          <Icon className="mr-[6px]">
+          <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Calendar />
           </Icon>
           <Number>78</Number>

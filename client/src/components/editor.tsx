@@ -196,7 +196,7 @@ const WYSIWYG = (props: Props) => {
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
 
-        {/* Clear button */}
+        {/* dump 放到 dev 模式下，脚本设置变量 */}
         <button
           onClick={handleHtmlDump}
           className="rounded bg-red-100 px-3 py-2 text-red-700 transition-colors hover:bg-red-200"

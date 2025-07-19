@@ -13,7 +13,6 @@ import {
   useDraft,
   useEntries,
 } from "@/hooks/use-entries";
-import Toolbar from "@/components/tool-bar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -101,10 +100,6 @@ export default function Journal() {
         id="scrollableDiv"
         className={`journal-bg flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
       >
-        <Toolbar
-          onSearchToggle={() => setSearchOpen(!searchOpen)}
-          onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
-        />
         <Header
           onSearchToggle={() => setSearchOpen(!searchOpen)}
           onCalendarToggle={() => setCalendarOpen(!calendarOpen)}

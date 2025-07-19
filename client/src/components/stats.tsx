@@ -7,7 +7,7 @@ import {
   Number,
   Quote,
   VerticalBar,
-} from "@/components/ui/stats-icon";
+} from "@/components/ui/icon";
 
 const Stats = () => {
   return (

@@ -30,10 +30,22 @@
   fill: var(--color-foreground);
 }
 
+.card-more-icon {
+  fill: var(--color-more-arrow);
+}
+
 .svg-search-icon {
   stroke: var(--color-foreground);
 }
 
+.svg-more-arrow {
+  stroke: var(--color-more-arrow);
+}
+
 .search-icon-bg {
   background-color: var(--color-search-icon);
+}
+
+.toolbar-icon-bg {
+  background-color: var(--color-toolbar-icon);
 }

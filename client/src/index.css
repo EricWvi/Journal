@@ -38,7 +38,10 @@
   --color-vertical-bar: var(--vertical-bar);
   --color-stats-font: var(--stats-font);
   --color-search-icon: var(--search-icon-bg);
+  --color-toolbar-icon: var(--toolbar-icon-bg);
   --color-entry-card: var(--entry-card);
+  --color-more-arrow: var(--more-arrow);
+  --color-tool-bar: var(--tool-bar);
 }
 
 :root {
@@ -81,7 +84,10 @@
   --vertical-bar: oklch(0.8577 0.0044 17.24);
   --stats-font: oklch(0.6219 0.0046 301.37);
   --search-icon-bg: oklch(0.9132 0.0045 0.01);
+  --toolbar-icon-bg: oklch(0.9132 0.0045 0.01 / 60%);
   --entry-card: oklch(1 0 0);
+  --tool-bar: oklch(1 0 0 / 72%);
+  --more-arrow: oklch(0.6133 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -125,7 +131,10 @@
     --vertical-bar: oklch(0.2889 0.0127 292.14);
     --stats-font: oklch(0.661 0.0161 290.13);
     --search-icon-bg: oklch(0.3019 0.0161 290.5);
+    --toolbar-icon-bg: oklch(0.3019 0.0161 290.5 / 80%);
     --entry-card: oklch(0.2123 0.018 300.11);
+    --tool-bar: oklch(0.1 0 0 / 60%);
+    --more-arrow: oklch(0.7089 0.0189 311.51);
   }
 }
 

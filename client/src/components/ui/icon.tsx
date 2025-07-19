@@ -1,4 +1,4 @@
-import "./stats-icon.css";
+import "./icon.css";
 
 export const Entries = () => (
   <svg
@@ -225,7 +225,7 @@ export const Search = () => (
   </svg>
 );
 
-export const More = () => (
+export const More = ({ className = "svg-more-icon" }: IconProps) => (
   <svg
     viewBox="0 0 60 60"
     xmlns="http://www.w3.org/2000/svg"
@@ -234,9 +234,37 @@ export const More = () => (
     fill="none"
   >
     <g id="more">
-      <circle id="more14" cx="10" cy="30" r="6" className="svg-more-icon" />
-      <circle id="more15" cx="30" cy="30" r="6" className="svg-more-icon" />
-      <circle id="more16" cx="50" cy="30" r="6" className="svg-more-icon" />
+      <circle id="more14" cx="10" cy="30" r="6" className={className} />
+      <circle id="more15" cx="30" cy="30" r="6" className={className} />
+      <circle id="more16" cx="50" cy="30" r="6" className={className} />
+    </g>
+  </svg>
+);
+
+export const MoreArrow = () => (
+  <svg
+    viewBox="0 0 40 40"
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="100%"
+    fill="none"
+  >
+    <g id="more-arrow">
+      <path
+        id="more25"
+        d="M0 0L15 15.5"
+        className="svg-more-arrow"
+        strokeLinecap="round"
+        strokeWidth="6"
+        transform="matrix(-1,0,0,1,35,12.001)"
+      />
+      <path
+        id="more27"
+        d="M5 12L20 27.5"
+        className="svg-more-arrow"
+        strokeLinecap="round"
+        strokeWidth="6"
+      />
     </g>
   </svg>
 );

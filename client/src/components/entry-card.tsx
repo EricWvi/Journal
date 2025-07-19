@@ -1,10 +1,9 @@
-import { Edit, Heart, MoreHorizontal, Smile } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { NodeType } from "@/lib/html-parse";
+import { Node, NodeType } from "@/lib/html-parse";
 import { emojiClassName } from "./emoji-picker";
 import { EntryMeta, useEntry } from "@/hooks/use-entries";
 import { ImageList } from "@/components/ui/image-list";
 import { useEffect, useRef, useState } from "react";
+import { Icon, More, MoreArrow } from "@/components/ui/icon";
 
 const monthToText = [
   "January",
@@ -42,13 +41,26 @@ export default function EntryCard({
 }: EntryCardProps) {
   const { data: entry, isLoading } = useEntry(meta.id);
   const [expanded, setExpanded] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const collapseHeight = 144; // Default height when collapsed
+
+  useEffect(() => {
+    if (entry && cardRef.current) {
+      if (cardRef.current.scrollHeight > collapseHeight) {
+        setHasMore(true);
+      } else {
+        setHasMore(false);
+      }
+    }
+  }, [entry]);
 
   useEffect(() => {
     if (cardRef.current) {
       cardRef.current.style.maxHeight = expanded
         ? cardRef.current.scrollHeight + "px"
-        : "72px";
+        : collapseHeight + "px";
     }
   }, [expanded]);
 
@@ -66,6 +78,28 @@ export default function EntryCard({
       minute: "2-digit",
       hour12: false,
     });
+  };
+
+  const filterContent = (content: Node[]) => {
+    let rst: Node[] = [];
+    let prev: NodeType = NodeType.BREAK;
+    for (const node of content) {
+      if (
+        node.type === NodeType.IMAGE ||
+        (prev === NodeType.IMAGE && node.type === NodeType.BREAK)
+      ) {
+        prev = node.type;
+        continue;
+      }
+      rst.push(node);
+      prev = node.type;
+    }
+    const firstNonBreak = rst.findIndex((node) => node.type !== NodeType.BREAK);
+    const lastNonBreak = rst.findLastIndex(
+      (node) => node.type !== NodeType.BREAK,
+    );
+    if (firstNonBreak === -1) return [];
+    return rst.slice(firstNonBreak, lastNonBreak + 1);
   };
 
   return (
@@ -88,6 +122,8 @@ export default function EntryCard({
               Yesterday
             </h3>
           )}
+
+          {/* entry card */}
           <div className="entry-card-shadow bg-entry-card mb-4 flex flex-col overflow-hidden rounded-lg transition-shadow hover:shadow-md">
             {/* TODO picture loading css animation */}
             <div className="my-1 px-1">
@@ -97,36 +133,46 @@ export default function EntryCard({
                   .map((node) => node.content as string)}
               />
             </div>
+
+            {/* text content */}
             <div
               ref={cardRef}
-              className={`my-3 overflow-hidden px-4 transition-all duration-500 ease-in-out`}
+              className={`relative mx-4 my-3 overflow-hidden transition-all duration-500 ease-in-out`}
               onClick={() => setExpanded(!expanded)}
             >
+              {hasMore && !expanded && (
+                <div className="absolute right-0 bottom-1 flex h-5 w-5 items-center justify-center">
+                  <div className="blur-button-6">
+                    <Icon className="h-[14px] w-[14px]">
+                      <MoreArrow />
+                    </Icon>
+                  </div>
+                </div>
+              )}
               <div className="text-foreground text-lg leading-6 font-normal">
-                {entry.content
-                  .filter((node) => node.type !== NodeType.IMAGE)
-                  .map((node, index) => {
-                    switch (node.type) {
-                      case NodeType.TEXT:
-                        return <span key={index}>{node.content}</span>;
-                      case NodeType.BREAK:
-                        return <br key={index} />;
-                      case NodeType.EMOJI:
-                        return (
-                          <span
-                            key={index}
-                            draggable={false}
-                            contentEditable={false}
-                            className={emojiClassName(node.content ?? "")}
-                          ></span>
-                        );
-                      default:
-                        return <></>;
-                    }
-                  })}
+                {filterContent(entry.content).map((node, index) => {
+                  switch (node.type) {
+                    case NodeType.TEXT:
+                      return <span key={index}>{node.content}</span>;
+                    case NodeType.BREAK:
+                      return <br key={index} />;
+                    case NodeType.EMOJI:
+                      return (
+                        <span
+                          key={index}
+                          draggable={false}
+                          contentEditable={false}
+                          className={emojiClassName(node.content ?? "")}
+                        ></span>
+                      );
+                    default:
+                      return <></>;
+                  }
+                })}
               </div>
             </div>
 
+            {/* footer */}
             <div className="border-border mx-1 flex items-center justify-between border-t px-3 py-1">
               <div className="flex-1">
                 <div className="flex items-center space-x-4 text-sm text-[hsl(215,4%,56%)]">
@@ -134,7 +180,11 @@ export default function EntryCard({
                   {showTime && <span>{formatTime(entry.createdAt)}</span>}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">12</div>
+              <div onClick={onEdit}>
+                <Icon className="h-5 w-5">
+                  <More className="card-more-icon" />
+                </Icon>
+              </div>
             </div>
           </div>
         </>

@@ -1,14 +1,14 @@
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Icon, Search, More } from "@/components/ui/stats-icon";
+import { Icon, Search, More } from "@/components/ui/icon";
 import Stats from "@/components/stats";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
   onSearchToggle: () => void;
@@ -40,6 +40,7 @@ export default function Header({
 
   return (
     <header>
+      <Toolbar />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-10 mb-1 flex h-12 items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -57,7 +58,7 @@ export default function Header({
                 <Button
                   variant="outline"
                   data-empty={!date}
-                  className="hover:text-foreground p-2 text-[hsl(215,4%,56%)]"
+                  className="hover:text-foreground hidden p-2 text-[hsl(215,4%,56%)]"
                 >
                   <CalendarIcon className="text-lg" />
                 </Button>
@@ -84,6 +85,57 @@ export default function Header({
         </div>
 
         <Stats />
+      </div>
+    </header>
+  );
+}
+
+function Toolbar() {
+  const [opacity, setOpacity] = useState(0);
+  useEffect(() => {
+    const container = document.querySelector("#scrollableDiv");
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollY = (container as HTMLElement).scrollTop;
+      if (scrollY <= 80) {
+        setOpacity(0);
+      } else if (scrollY >= 100) {
+        setOpacity(1);
+      } else {
+        const ratio = (scrollY - 80) / (100 - 80);
+        setOpacity(ratio);
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={`apple-backdrop fixed top-0 z-50 h-auto w-full shrink-0 shadow-md transition-opacity duration-300 ${opacity > 0.6 ? "" : "pointer-events-none"}`}
+      style={{ opacity }}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-10 items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-foreground text-xl font-semibold">Journal</h1>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <div className="toolbar-icon-bg flex h-7 w-7 items-center justify-center rounded-full">
+              <Icon className="h-4 w-4">
+                <Search />
+              </Icon>
+            </div>
+            <div className="toolbar-icon-bg flex h-7 w-7 items-center justify-center rounded-full">
+              <Icon className="h-4 w-4">
+                <More />
+              </Icon>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

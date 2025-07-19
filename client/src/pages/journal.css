@@ -9,3 +9,34 @@
 .entry-card-shadow {
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
 }
+
+.apple-backdrop {
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-color: var(--color-tool-bar);
+}
+
+.has-more-blur {
+  /* Blurred background effect */
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent background */
+  backdrop-filter: blur(8px); /* Apply blur */
+  -webkit-backdrop-filter: blur(8px); /* For Safari support */
+  /* border-radius: 16px; */
+  /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); */
+}
+
+.blur-button-6 {
+  display: relative;
+}
+
+.blur-button-6::before {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 24px;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  filter: blur(10px);
+  z-index: 100;
+}

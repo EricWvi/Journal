@@ -1,5 +1,3 @@
-import "./icon.css";
-
 export const Entries = () => (
   <svg
     viewBox="0 0 68 67"
@@ -15,7 +13,7 @@ export const Entries = () => (
       x="15"
       y="0"
       rx="6"
-      className="entries-icon"
+      className="fill-entries-icon"
     />
     <rect
       id="svg-rect-2"
@@ -24,7 +22,7 @@ export const Entries = () => (
       x="10"
       y="6"
       rx="6"
-      className="entries-icon"
+      className="fill-entries-icon"
     />
     <rect
       id="svg-rect-3"
@@ -33,7 +31,7 @@ export const Entries = () => (
       x="8.5"
       y="4.5"
       rx="6"
-      className="bg-entries-icon"
+      className="stroke-background"
       strokeWidth="3"
     />
     <rect
@@ -43,7 +41,7 @@ export const Entries = () => (
       x="4"
       y="13"
       rx="6"
-      className="entries-icon"
+      className="fill-entries-icon"
     />
     <rect
       id="svg-rect-5"
@@ -52,7 +50,7 @@ export const Entries = () => (
       x="2"
       y="11"
       rx="6"
-      className="bg-entries-icon"
+      className="stroke-background"
       strokeWidth="4"
     />
   </svg>
@@ -71,12 +69,12 @@ export const Quote = () => (
       cx="20.4908981"
       cy="34.5009155"
       r="20"
-      className="quote-icon"
+      className="fill-quote-icon"
     />
     <path
       id="svg-quote-3"
       d="M9.9909 47.5009C9.9909 47.5009 -1.50914 36.5009 4.99089 20.5009C11.4909 4.50094 25.9909 3.00092 25.9909 3.00092"
-      className="quote-stroke"
+      className="stroke-quote-stroke"
       strokeLinecap="round"
       strokeWidth="6"
     />
@@ -85,12 +83,12 @@ export const Quote = () => (
       cx="66.4908981"
       cy="34.5009155"
       r="20"
-      className="quote-icon"
+      className="fill-quote-icon"
     />
     <path
       id="svg-quote-5"
       d="M55.9909 47.5009C55.9909 47.5009 44.4909 36.5009 50.9909 20.5009C57.4909 4.50094 71.9909 3.00092 71.9909 3.00092"
-      className="quote-stroke"
+      className="stroke-quote-stroke"
       strokeLinecap="round"
       strokeWidth="6"
     />
@@ -112,7 +110,7 @@ export const Calendar = () => (
       x="0"
       y="0"
       rx="6"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <rect
       id="svg-calendar-2"
@@ -121,77 +119,77 @@ export const Calendar = () => (
       x="7"
       y="16"
       rx="2"
-      className="bg-calendar-icon"
+      className="fill-background"
     />
     <circle
       id="svg-calendar-3"
       cx="30"
       cy="24"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-4"
       cx="43"
       cy="24"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-5"
       cx="56"
       cy="24"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-6"
       cx="17"
       cy="36"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-7"
       cx="30"
       cy="36"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-8"
       cx="43"
       cy="36"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-12"
       cx="56"
       cy="36"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-9"
       cx="17"
       cy="48"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-10"
       cx="30"
       cy="48"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
     <circle
       id="svg-calendar-11"
       cx="43"
       cy="48"
       r="4"
-      className="calendar-icon"
+      className="fill-calendar-icon"
     />
   </svg>
 );
@@ -210,13 +208,13 @@ export const Search = () => (
         cx="26"
         cy="27"
         r="17.5"
-        className="svg-search-icon"
+        className="stroke-foreground"
         strokeWidth="6"
       />
       <path
         id="search-1"
         d="M0 0L16.2789 0"
-        className="svg-search-icon"
+        className="stroke-foreground"
         strokeLinecap="round"
         strokeWidth="9"
         transform="matrix(0.737154,0.675725,-0.675725,0.737154,39,41)"
@@ -225,7 +223,7 @@ export const Search = () => (
   </svg>
 );
 
-export const More = ({ className = "svg-more-icon" }: IconProps) => (
+export const More = ({ className = "fill-foreground" }: IconProps) => (
   <svg
     viewBox="0 0 60 60"
     xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +251,7 @@ export const MoreArrow = () => (
       <path
         id="more25"
         d="M0 0L15 15.5"
-        className="svg-more-arrow"
+        className="stroke-more-arrow"
         strokeLinecap="round"
         strokeWidth="6"
         transform="matrix(-1,0,0,1,35,12.001)"
@@ -261,7 +259,7 @@ export const MoreArrow = () => (
       <path
         id="more27"
         d="M5 12L20 27.5"
-        className="svg-more-arrow"
+        className="stroke-more-arrow"
         strokeLinecap="round"
         strokeWidth="6"
       />
@@ -295,7 +293,7 @@ export const Description = ({
   className = "",
   children,
 }: IconProps & { children?: React.ReactNode }) => (
-  <div className={"stats-font mt-1 text-xs leading-none" + className}>
+  <div className={"text-stats-font mt-1 text-xs leading-none" + className}>
     {children}
   </div>
 );

@@ -71,12 +71,12 @@ export default function Header({
                 />
               </PopoverContent>
             </Popover>
-            <div className="search-icon-bg flex h-8 w-8 items-center justify-center rounded-full">
+            <div className="bg-search-icon flex h-8 w-8 items-center justify-center rounded-full">
               <Icon className="h-5 w-5">
                 <Search />
               </Icon>
             </div>
-            <div className="search-icon-bg flex h-8 w-8 items-center justify-center rounded-full">
+            <div className="bg-search-icon flex h-8 w-8 items-center justify-center rounded-full">
               <Icon className="h-5 w-5">
                 <More />
               </Icon>
@@ -124,12 +124,12 @@ function Toolbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <div className="toolbar-icon-bg flex h-7 w-7 items-center justify-center rounded-full">
+            <div className="bg-toolbar-icon flex h-7 w-7 items-center justify-center rounded-full">
               <Icon className="h-4 w-4">
                 <Search />
               </Icon>
             </div>
-            <div className="toolbar-icon-bg flex h-7 w-7 items-center justify-center rounded-full">
+            <div className="bg-toolbar-icon flex h-7 w-7 items-center justify-center rounded-full">
               <Icon className="h-4 w-4">
                 <More />
               </Icon>

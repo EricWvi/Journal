@@ -1,5 +1,5 @@
 .journal-bg {
-  background-image: linear-gradient(
+  background: linear-gradient(
     to bottom,
     var(--background-start),
     var(--background-end)
@@ -16,27 +16,28 @@
   background-color: var(--color-tool-bar);
 }
 
-.has-more-blur {
-  /* Blurred background effect */
-  background: rgba(255, 255, 255, 0.3); /* semi-transparent background */
-  backdrop-filter: blur(8px); /* Apply blur */
-  -webkit-backdrop-filter: blur(8px); /* For Safari support */
-  /* border-radius: 16px; */
-  /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); */
-}
-
-.blur-button-6 {
-  display: relative;
-}
-
-.blur-button-6::before {
+.more-arrow-blur::before {
   content: "";
   position: absolute;
-  width: 40px;
+  width: 36px;
   height: 24px;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-  filter: blur(10px);
-  z-index: 100;
+  bottom: -4px;
+  background: linear-gradient(
+    270deg,
+    oklch(1 0 0) 50%,
+    oklch(1 0 0 / 60%) 100%
+  );
+  filter: blur(2px);
+  z-index: 5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .more-arrow-blur::before {
+    background: linear-gradient(
+      270deg,
+      oklch(0.2123 0.018 300.11) 50%,
+      oklch(0.2123 0.018 300.11 / 60%) 100%
+    );
+  }
 }

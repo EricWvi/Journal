@@ -89,7 +89,7 @@ export default function Journal() {
 
   return (
     <div
-      className={`relative h-screen w-full origin-top transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
+      className={`relative h-[100dvh] w-full origin-top transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
     >
       <div
         className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50" : "bg-gray-500/0"}`}

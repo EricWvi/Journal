@@ -140,15 +140,15 @@ export default function EntryCard({
               className={`relative mx-4 my-3 overflow-hidden transition-all duration-500 ease-in-out`}
               onClick={() => setExpanded(!expanded)}
             >
-              {hasMore && !expanded && (
-                <div className="absolute right-0 bottom-1 flex h-5 w-5 items-center justify-center">
-                  <div className="blur-button-6">
-                    <Icon className="h-[14px] w-[14px]">
-                      <MoreArrow />
-                    </Icon>
-                  </div>
+              <div
+                className={`${hasMore && !expanded ? "opacity-100 delay-500" : "opacity-0"} absolute right-0 bottom-[1px] flex h-5 w-5 items-center justify-center transition-opacity duration-100`}
+              >
+                <div className="more-arrow-blur relative">
+                  <Icon className="relative z-10 h-[14px] w-[14px]">
+                    <MoreArrow />
+                  </Icon>
                 </div>
-              )}
+              </div>
               <div className="text-foreground text-lg leading-6 font-normal">
                 {filterContent(entry.content).map((node, index) => {
                   switch (node.type) {

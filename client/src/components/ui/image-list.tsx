@@ -13,6 +13,9 @@ export const ImageList = ({ imgSrc }: Props) => {
     />
   );
 
+  // `flex-1` alone sometimes doesn't work as expected
+  // for equal heights unless you set `h-0` on the children.
+  // This allows the flex algorithm to allocate the available height equally.
   if (!imgSrc || imgSrc.length === 0) {
     return null;
   }

@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
   EntryMeta,
-  isToday,
-  isYesterday,
   QueryCondition,
   useDraft,
   useEntries,
@@ -139,13 +137,13 @@ export default function Journal() {
             {/* Entry Cards */}
             {[
               ...entries
-                .filter((entry) => isToday(entry) || isYesterday(entry))
+                .filter((entry) => entry.isToday() || entry.isYesterday())
                 .map((entry, idx, arr) => {
                   const prev = arr[idx - 1];
                   const next = arr[idx + 1];
-                  const showToday = isToday(entry) && !prev;
+                  const showToday = entry.isToday() && !prev;
                   const showYesterday =
-                    isYesterday(entry) && (!prev || entry.day !== prev.day);
+                    entry.isYesterday() && (!prev || entry.day !== prev.day);
                   const showTime = Boolean(
                     (prev &&
                       entry.year === prev.year &&
@@ -166,7 +164,7 @@ export default function Journal() {
                   };
                 }),
               ...entries
-                .filter((entry) => !isToday(entry) && !isYesterday(entry))
+                .filter((entry) => !entry.isToday() && !entry.isYesterday())
                 .map((entry, idx, arr) => {
                   const prev = arr[idx - 1];
                   const next = arr[idx + 1];

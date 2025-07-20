@@ -175,9 +175,9 @@ export default function EntryCard({
             {/* footer */}
             <div className="border-border mx-1 flex items-center justify-between border-t px-3 py-1">
               <div className="flex-1">
-                <div className="text-more-arrow flex items-center space-x-4 text-sm">
+                <div className="text-more-arrow flex items-center space-x-1 text-sm">
                   <span>{formatDate(entry.createdAt)}</span>
-                  {showTime && <span>{formatTime(entry.createdAt)}</span>}
+                  {showTime && <span>· {formatTime(entry.createdAt)}</span>}
                 </div>
               </div>
               <div onClick={onEdit}>

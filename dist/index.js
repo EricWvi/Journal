@@ -36,7 +36,7 @@ var entries = pgTable("entry", {
   deletedAt: timestamp("deleted_at"),
   content: jsonb("content").$type().default([]).notNull(),
   visibility: text("visibility").default("PUBLIC" /* PUBLIC */).notNull(),
-  payload: jsonb("payload").default({}).notNull()
+  payload: jsonb("payload").$type().default({}).notNull()
 });
 var insertEntrySchema = createInsertSchema(entries).omit({
   id: true,
@@ -84,6 +84,9 @@ var MemStorage = class {
   }
   async getEntry(id) {
     return this.entries.get(id);
+  }
+  async getEntryDate() {
+    return Array.from(this.entries.values()).filter((entry) => entry.visibility !== "DRAFT" /* DRAFT */).map((entry) => entry.createdAt.toISOString());
   }
   async createDraft() {
     const id = this.currentId++;
@@ -170,17 +173,42 @@ async function registerRoutes(app2) {
         return res.json({ message: draft });
       }
       if (action === "GetEntries") {
-        const { page } = req.body;
-        const entries2 = await storage.getEntries();
+        const { page, c } = req.body;
+        const condition = c || [];
+        const all = await storage.getEntries();
+        const entries2 = all.filter((entry) => {
+          return condition.every((cond) => {
+            if (cond.field === "date") {
+              const entryDate = new Date(entry.createdAt);
+              switch (cond.operator) {
+                case "eq":
+                  const valueDate = new Date(cond.value);
+                  return entryDate.getFullYear() === valueDate.getFullYear() && entryDate.getMonth() === valueDate.getMonth() && entryDate.getDate() === valueDate.getDate();
+                case "in":
+                  const [left, right] = cond.value;
+                  const leftDate = new Date(left);
+                  const rightDate = new Date(right);
+                  return entryDate >= leftDate && entryDate <= rightDate;
+                default:
+                  return false;
+              }
+            }
+            if (cond.field === "tag") {
+              return entry.payload.tags && entry.payload.tags.includes(cond.value);
+            }
+            if (cond.field === "place") {
+              return entry.payload.location && Array.isArray(cond.value) && entry.payload.location.length >= cond.value.length && cond.value.every(
+                (loc, idx) => entry.payload.location && loc === entry.payload.location[idx]
+              );
+            }
+          });
+        });
         const pageSize = 6;
         const hasMore = entries2.length > page * pageSize;
         const entriesInPage = entries2.slice(
           (page - 1) * pageSize,
           page * pageSize
         );
-        if (entriesInPage.length === 0) {
-          return res.status(404).json({ message: "No entries found" });
-        }
         return res.json({ message: { entries: entriesInPage, hasMore } });
       }
       if (action === "GetEntry") {
@@ -190,6 +218,10 @@ async function registerRoutes(app2) {
           return res.status(404).json({ message: "Entry not found" });
         }
         return res.json({ message: entry });
+      }
+      if (action === "GetEntryDate") {
+        const dates = await storage.getEntryDate();
+        return res.json({ message: { entryDates: dates } });
       }
       if (action === "CreateEntryFromDraft") {
         const { id, ...data } = req.body;
@@ -219,6 +251,29 @@ async function registerRoutes(app2) {
           return res.status(404).json({ message: "Entry not found" });
         }
         return res.status(204).send();
+      }
+      return res.status(400).json({ message: "Unknown Action" });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  app2.post("/api/meta", async (req, res) => {
+    const action = req.query.Action;
+    try {
+      if (action === "GetEntriesCount") {
+        const count = Math.floor(Math.random() * 600) + 1;
+        return res.json({ message: count });
+      }
+      if (action === "GetWordsCount") {
+        const count = Math.floor(Math.random() * 1e5) + 1;
+        return res.json({ message: count });
+      }
+      if (action === "GetDaysCount") {
+        const count = Math.floor(Math.random() * 1e3) + 1;
+        return res.json({ message: count });
       }
       return res.status(400).json({ message: "Unknown Action" });
     } catch (error) {

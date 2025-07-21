@@ -1,13 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Save } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  VisuallyHidden,
-} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
   useEntry,
@@ -18,6 +10,7 @@ import {
 import { Visibility } from "@shared/schema";
 import WYSIWYG, { EditorHandle } from "@/components/editor";
 import { outTrash } from "@/hooks/use-apis";
+import { formatDate, formatTime } from "@/lib/utils";
 
 interface EntryModalProps {
   open: boolean;
@@ -32,6 +25,18 @@ export default function EntryModal({
   entryId,
   refresh,
 }: EntryModalProps) {
+  const [isAnimating, setIsAnimating] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => setIsAnimating(true), 10);
+    }
+  }, [open]);
+
+  const closeModal = () => {
+    setIsAnimating(false);
+    onClose();
+  };
+
   const { data: editingEntry, isLoading } = useEntry(entryId);
   const [visModal, setVisModal] = useState(
     editingEntry?.visibility || Visibility.PUBLIC,
@@ -93,7 +98,7 @@ export default function EntryModal({
         }
       }
 
-      onClose();
+      closeModal();
     } catch (error) {
       toast({
         title: "Error",
@@ -103,32 +108,28 @@ export default function EntryModal({
     }
   };
 
-  const getCurrentDateTime = () => {
-    return new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-
   return (
-    <Dialog open={open} onOpenChange={() => handleSave(true)}>
-      <VisuallyHidden>
-        <DialogTitle>Entry Editor</DialogTitle>
-        <DialogDescription>Entry Content</DialogDescription>
-      </VisuallyHidden>
-      <DialogContent className="top-12 bottom-0 overflow-hidden p-0">
+    <div className="fixed inset-0 z-50">
+      <div className="absolute inset-0" onClick={() => handleSave(true)}></div>
+      <div
+        className={`bg-entry-modal absolute top-13 bottom-0 transform overflow-hidden rounded-t-xl p-0 transition-transform duration-200 ease-out ${
+          isAnimating ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="border-border flex items-center justify-between border-b p-6">
             <div className="flex items-center space-x-4">
-              <span className="font-semibold">{getCurrentDateTime()}</span>
+              <span className="text-foreground font-semibold">
+                <span>
+                  {formatDate(editingEntry.createdAt)}
+                  {" · "}
+                  {formatTime(editingEntry.createdAt)}
+                </span>
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <Button
-                variant="outline"
                 onClick={() => handleSave(false)}
                 disabled={
                   createEntryMutation.isPending ||
@@ -136,29 +137,14 @@ export default function EntryModal({
                   updateDraftMutation.isPending
                 }
               >
-                <Save className="mr-2 h-4 w-4" />
-                Save
+                Done
               </Button>
             </div>
           </div>
 
-          {/* <label className="cursor-pointer">
-                <Button variant="ghost" size="sm" asChild>
-                  <span>
-                    <Upload className="h-4 w-4" />
-                  </span>
-                </Button>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-              </label> */}
           <WYSIWYG ref={editorRef} editingEntry={editingEntry} />
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

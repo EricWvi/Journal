@@ -3,7 +3,6 @@ import React, {
   useRef,
   useCallback,
   useEffect,
-  forwardRef,
   useImperativeHandle,
 } from "react";
 import {
@@ -38,7 +37,7 @@ const WYSIWYG = (props: Props) => {
       switch (node.type) {
         case NodeType.IMAGE:
           const child = document.createElement("span");
-          child.className = "block aspect-[4/3] w-full bg-gray-500";
+          child.className = "block h-42 w-full rounded-lg overflow-hidden";
           child.contentEditable = "false";
           child.draggable = false;
           createRoot(child).render(<EditorPhoto imgSrc={node.content ?? ""} />);
@@ -196,7 +195,7 @@ const WYSIWYG = (props: Props) => {
 
         <div className="mx-2 h-6 w-px bg-gray-300"></div>
 
-        {/* Clear button */}
+        {/* dump 放到 dev 模式下，脚本设置变量 */}
         <button
           onClick={handleHtmlDump}
           className="rounded bg-red-100 px-3 py-2 text-red-700 transition-colors hover:bg-red-200"
@@ -219,7 +218,7 @@ const WYSIWYG = (props: Props) => {
           ref={editorRef}
           contentEditable
           onBlur={handleBlur}
-          className="h-[40vh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
+          className="h-[40lvh] w-full overflow-y-auto bg-white p-3 text-lg/6 outline-none"
           suppressContentEditableWarning={true}
         ></div>
       </div>

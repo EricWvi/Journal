@@ -17,3 +17,10 @@ export async function getEntryDate(): Promise<string[]> {
   const data = await response.json();
   return data.message.entryDates;
 }
+
+export function formatMediaUrl(url: string): string {
+  if (url.startsWith("/api/m/")) {
+    return url;
+  }
+  return `/api/m/${url}`;
+}

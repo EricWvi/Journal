@@ -2,11 +2,37 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Entry, InsertEntry } from "@shared/schema";
 
-export interface EntryMeta {
+export class EntryMeta {
   id: number;
   year: number;
   month: number;
   day: number;
+
+  constructor(id: number, year: number, month: number, day: number) {
+    this.id = id;
+    this.year = year;
+    this.month = month;
+    this.day = day;
+  }
+
+  isToday(): boolean {
+    const today = new Date();
+    return (
+      this.year === today.getFullYear() &&
+      this.month === today.getMonth() + 1 &&
+      this.day === today.getDate()
+    );
+  }
+
+  isYesterday(): boolean {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return (
+      this.year === yesterday.getFullYear() &&
+      this.month === yesterday.getMonth() + 1 &&
+      this.day === yesterday.getDate()
+    );
+  }
 }
 
 export interface QueryCondition {
@@ -28,12 +54,12 @@ export async function useEntries(
   const metas = (data.message.entries as Entry[]).map((entry) => {
     setQueryFn(["/api/entry", entry.id], entry);
     const time = new Date(entry.createdAt);
-    return {
-      id: entry.id,
-      year: time.getFullYear(),
-      month: time.getMonth() + 1,
-      day: time.getDate(),
-    };
+    return new EntryMeta(
+      entry.id,
+      time.getFullYear(),
+      time.getMonth() + 1,
+      time.getDate(),
+    );
   });
   return [metas, data.message.hasMore];
 }

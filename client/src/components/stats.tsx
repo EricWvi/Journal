@@ -8,8 +8,16 @@ import {
   Quote,
   VerticalBar,
 } from "@/components/ui/icon";
+import {
+  useGetDaysCount,
+  useGetEntriesCount,
+  useGetWordsCount,
+} from "@/hooks/use-metas";
 
 const Stats = () => {
+  const { data: entryCount } = useGetEntriesCount(new Date().getFullYear());
+  const { data: wordCount } = useGetWordsCount();
+  const { data: dayCount } = useGetDaysCount();
   return (
     <div className="flex items-center space-x-2">
       <div className="mr-4 flex flex-col">
@@ -17,7 +25,7 @@ const Stats = () => {
           <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Entries />
           </Icon>
-          <Number>12</Number>
+          <Number>{entryCount ?? 0}</Number>
         </div>
         <Description>Entries This Year</Description>
       </div>
@@ -29,7 +37,7 @@ const Stats = () => {
           <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Quote />
           </Icon>
-          <Number>3,658</Number>
+          <Number>{wordCount ?? 0}</Number>
         </div>
         <Description>Words Written</Description>
       </div>
@@ -41,7 +49,7 @@ const Stats = () => {
           <Icon className="mr-[6px] ml-[2px] h-4 w-4">
             <Calendar />
           </Icon>
-          <Number>78</Number>
+          <Number>{dayCount ?? 0}</Number>
         </div>
         <Description>Days Journaled</Description>
       </div>

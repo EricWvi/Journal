@@ -4,14 +4,16 @@ type Props = {
   imgSrc: string[];
 };
 
+export const ImgBlock = ({ src }: { src: string }) => (
+  <img
+    className="h-full w-full rounded-sm object-cover"
+    src={formatMediaUrl(src)}
+    alt="img"
+  />
+);
+
 export const ImageList = ({ imgSrc }: Props) => {
-  const imgBlock = (src: string) => (
-    <img
-      className="h-full w-full rounded-sm object-cover"
-      src={formatMediaUrl(src)}
-      alt="img"
-    />
-  );
+  const imgBlock = (src: string) => <ImgBlock src={src} />;
 
   // `flex-1` alone sometimes doesn't work as expected
   // for equal heights unless you set `h-0` on the children.

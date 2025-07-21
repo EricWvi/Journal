@@ -1,13 +1,5 @@
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Icon, Search, More } from "@/components/ui/icon";
 import Stats from "@/components/stats";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 
 interface HeaderProps {
@@ -53,24 +45,6 @@ export default function Header({
           </div>
 
           <div className="flex items-center space-x-4">
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  data-empty={!date}
-                  className="hover:text-foreground hidden p-2 text-[hsl(215,4%,56%)]"
-                >
-                  <CalendarIcon className="text-lg" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  selected={date}
-                  onSelect={handleDateSelect}
-                />
-              </PopoverContent>
-            </Popover>
             <div className="bg-search-icon flex h-8 w-8 items-center justify-center rounded-full">
               <Icon className="h-5 w-5">
                 <Search />
@@ -113,8 +87,8 @@ function Toolbar() {
   }, []);
 
   return (
-    <header
-      className={`apple-backdrop fixed top-0 z-50 h-auto w-full shrink-0 shadow-md transition-opacity duration-300 ${opacity > 0.6 ? "" : "pointer-events-none"}`}
+    <div
+      className={`toolbar-after apple-backdrop fixed top-0 z-50 h-auto w-full shrink-0 transition-opacity duration-300 ${opacity > 0.6 ? "" : "pointer-events-none"}`}
       style={{ opacity }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -137,6 +111,6 @@ function Toolbar() {
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

@@ -32,6 +32,16 @@
   z-index: 5;
 }
 
+.toolbar-after::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
+
 @media (prefers-color-scheme: dark) {
   .more-arrow-blur::before {
     background: linear-gradient(
@@ -39,5 +49,9 @@
       oklch(0.2123 0.018 300.11) 50%,
       oklch(0.2123 0.018 300.11 / 60%) 100%
     );
+  }
+
+  .toolbar-after::after {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }

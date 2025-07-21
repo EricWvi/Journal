@@ -134,6 +134,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/meta", async (req, res) => {
+    const action = req.query.Action;
+    try {
+      if (action === "GetEntriesCount") {
+        const count = Math.floor(Math.random() * 600) + 1;
+        return res.json({ message: count });
+      }
+      if (action === "GetWordsCount") {
+        const count = Math.floor(Math.random() * 100000) + 1;
+        return res.json({ message: count });
+      }
+      if (action === "GetDaysCount") {
+        const count = Math.floor(Math.random() * 1000) + 1;
+        return res.json({ message: count });
+      }
+      return res.status(400).json({ message: "Unknown Action" });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+
   // Search entries
   app.post("/api/entry/search/:query", async (req, res) => {
     try {

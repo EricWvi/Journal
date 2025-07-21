@@ -116,7 +116,7 @@ type PhotoProps = {
 export const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
     <img
-      className="h-full w-full object-contain"
+      className="h-full w-full object-cover"
       src={formatMediaUrl(imgSrc)}
       alt="img"
     />

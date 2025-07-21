@@ -286,7 +286,7 @@ export const Number = ({
   className = "",
   children,
 }: IconProps & { children?: React.ReactNode }) => (
-  <div className={"font-bold " + className}>{children}</div>
+  <div className={"text-foreground font-bold " + className}>{children}</div>
 );
 
 export const Description = ({

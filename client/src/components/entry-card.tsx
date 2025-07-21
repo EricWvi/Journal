@@ -4,6 +4,7 @@ import { EntryMeta, useEntry } from "@/hooks/use-entries";
 import { ImageList } from "@/components/ui/image-list";
 import { useEffect, useRef, useState } from "react";
 import { Icon, More, MoreArrow } from "@/components/ui/icon";
+import { formatDate, formatTime } from "@/lib/utils";
 
 const monthToText = [
   "January",
@@ -64,22 +65,6 @@ export default function EntryCard({
     }
   }, [expanded]);
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (date: Date | string) => {
-    return new Date(date).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-
   const filterContent = (content: Node[]) => {
     let rst: Node[] = [];
     let prev: NodeType = NodeType.BREAK;
@@ -124,7 +109,7 @@ export default function EntryCard({
           )}
 
           {/* entry card */}
-          <div className="entry-card-shadow bg-entry-card mb-4 flex flex-col overflow-hidden rounded-lg transition-shadow hover:shadow-md">
+          <div className="entry-card-shadow bg-entry-card mb-4 flex flex-col overflow-hidden rounded-lg backdrop-blur-[10px] transition-shadow hover:shadow-md">
             {/* TODO picture loading css animation */}
             <div className="my-1 px-1">
               <ImageList

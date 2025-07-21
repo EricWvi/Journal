@@ -84,165 +84,165 @@ export default function Journal() {
 
   const handleEntryModalClose = () => {
     setEntryModalOpen(false);
-    setEditingEntry(0);
+    setTimeout(() => setEditingEntry(0), 200); // TODO update meta here
   };
 
   return (
-    <div
-      className={`relative h-[100dvh] w-full origin-top transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-lg" : ""}`}
-    >
+    <div>
       <div
-        className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50" : "bg-gray-500/0"}`}
-      ></div>
-      <div
-        id="scrollableDiv"
-        className={`journal-bg flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-lg" : ""}`}
+        className={`relative h-[100dvh] w-full origin-top overflow-hidden transition-all duration-300 ease-in-out ${entryModalOpen ? "translate-y-10 scale-90 rounded-xl" : ""}`}
       >
-        <Header
-          onSearchToggle={() => setSearchOpen(!searchOpen)}
-          onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
-        />
-        <main className="w-full max-w-4xl flex-1">
-          {/* Entries List */}
-          <InfiniteScroll
-            scrollableTarget="scrollableDiv"
-            className="px-5 sm:px-7 lg:px-9"
-            dataLength={entries.length}
-            next={fetchMoreData}
-            hasMore={hasMore}
-            loader={
-              <div className="space-y-6">
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="entry-card-shadow bg-entry-card animate-pulse rounded-lg p-5"
-                  >
-                    <div className="mb-4 h-6 rounded bg-gray-200 dark:bg-gray-800"></div>
-                    <div className="mb-2 h-4 rounded bg-gray-200 dark:bg-gray-800"></div>
-                    <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-800"></div>
-                  </div>
-                ))}
-              </div>
-            }
-            endMessage={
-              <div className="py-12 text-center">
-                <p className="text-lg text-[hsl(215,4%,56%)]">
-                  {entries.length === 0
-                    ? "No entries yet. Start your journaling journey today!"
-                    : "- end -"}
-                </p>
-              </div>
-            }
-          >
-            {/* Entry Cards */}
-            {[
-              ...entries
-                .filter((entry) => entry.isToday() || entry.isYesterday())
-                .map((entry, idx, arr) => {
-                  const prev = arr[idx - 1];
-                  const next = arr[idx + 1];
-                  const showToday = entry.isToday() && !prev;
-                  const showYesterday =
-                    entry.isYesterday() && (!prev || entry.day !== prev.day);
-                  const showTime = Boolean(
-                    (prev &&
-                      entry.year === prev.year &&
-                      entry.month === prev.month &&
-                      entry.day === prev.day) ||
-                      (next &&
-                        entry.year === next.year &&
-                        entry.month === next.month &&
-                        entry.day === next.day),
-                  );
-                  return {
-                    entry,
-                    showYear: false,
-                    showMonth: false,
-                    showToday,
-                    showYesterday,
-                    showTime,
-                  };
-                }),
-              ...entries
-                .filter((entry) => !entry.isToday() && !entry.isYesterday())
-                .map((entry, idx, arr) => {
-                  const prev = arr[idx - 1];
-                  const next = arr[idx + 1];
-                  const showYear = entry.year !== new Date().getFullYear();
-                  const showMonth =
-                    !prev ||
-                    entry.year !== prev.year ||
-                    entry.month !== prev.month;
-                  const showTime = Boolean(
-                    (prev &&
-                      entry.year === prev.year &&
-                      entry.month === prev.month &&
-                      entry.day === prev.day) ||
-                      (next &&
-                        entry.year === next.year &&
-                        entry.month === next.month &&
-                        entry.day === next.day),
-                  );
-                  return {
-                    entry,
-                    showYear,
-                    showMonth,
-                    showToday: false,
-                    showYesterday: false,
-                    showTime,
-                  };
-                }),
-            ].map(
-              ({
-                entry,
-                showYear,
-                showMonth,
-                showToday,
-                showYesterday,
-                showTime,
-              }) => (
-                <EntryCard
-                  key={entry.id}
-                  meta={entry}
-                  showYear={showYear}
-                  showMonth={showMonth}
-                  showToday={showToday}
-                  showYes={showYesterday}
-                  showTime={showTime}
-                  onEdit={() => handleEditEntry(entry.id)}
-                />
-              ),
-            )}
-          </InfiniteScroll>
-        </main>
+        <div
+          className={`pointer-events-none absolute inset-0 z-20 transition-all duration-300 ${entryModalOpen ? "bg-gray-500/50 dark:bg-gray-500/14" : "bg-gray-500/0"}`}
+        ></div>
+        <div
+          id="scrollableDiv"
+          className={`journal-bg flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-xl" : ""}`}
+        >
+          <Header
+            onSearchToggle={() => setSearchOpen(!searchOpen)}
+            onCalendarToggle={() => setCalendarOpen(!calendarOpen)}
+          />
+          <main className="w-full max-w-4xl flex-1">
+            {/* Entries List */}
+            <InfiniteScroll
+              scrollableTarget="scrollableDiv"
+              className="px-5 sm:px-7 lg:px-9"
+              dataLength={entries.length}
+              next={fetchMoreData}
+              hasMore={hasMore}
+              loader={
+                <div className="space-y-6">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="entry-card-shadow bg-entry-card animate-pulse rounded-lg p-5"
+                    >
+                      <div className="mb-4 h-6 rounded bg-gray-200 dark:bg-gray-800"></div>
+                      <div className="mb-2 h-4 rounded bg-gray-200 dark:bg-gray-800"></div>
+                      <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-800"></div>
+                    </div>
+                  ))}
+                </div>
+              }
+              endMessage={
+                <div className="py-12 text-center">
+                  <p className="text-lg text-[hsl(215,4%,56%)]">
+                    {entries.length === 0
+                      ? "No entries yet. Start your journaling journey today!"
+                      : "- end -"}
+                  </p>
+                </div>
+              }
+            >
+              {/* Entry Cards */}
+              {[
+                ...entries
+                  .filter((entry) => entry.isToday() || entry.isYesterday())
+                  .map((entry, idx, arr) => {
+                    const prev = arr[idx - 1];
+                    const next = arr[idx + 1];
+                    const showToday = entry.isToday() && !prev;
+                    const showYesterday =
+                      entry.isYesterday() && (!prev || entry.day !== prev.day);
+                    const showTime = Boolean(
+                      (prev &&
+                        entry.year === prev.year &&
+                        entry.month === prev.month &&
+                        entry.day === prev.day) ||
+                        (next &&
+                          entry.year === next.year &&
+                          entry.month === next.month &&
+                          entry.day === next.day),
+                    );
+                    return {
+                      entry,
+                      showYear: false,
+                      showMonth: false,
+                      showToday,
+                      showYesterday,
+                      showTime,
+                    };
+                  }),
+                ...entries
+                  .filter((entry) => !entry.isToday() && !entry.isYesterday())
+                  .map((entry, idx, arr) => {
+                    const prev = arr[idx - 1];
+                    const next = arr[idx + 1];
+                    const showYear = entry.year !== new Date().getFullYear();
+                    const showMonth =
+                      !prev ||
+                      entry.year !== prev.year ||
+                      entry.month !== prev.month;
+                    const showTime = Boolean(
+                      (prev &&
+                        entry.year === prev.year &&
+                        entry.month === prev.month &&
+                        entry.day === prev.day) ||
+                        (next &&
+                          entry.year === next.year &&
+                          entry.month === next.month &&
+                          entry.day === next.day),
+                    );
+                    return {
+                      entry,
+                      showYear,
+                      showMonth,
+                      showToday: false,
+                      showYesterday: false,
+                      showTime,
+                    };
+                  }),
+              ].map(
+                ({
+                  entry,
+                  showYear,
+                  showMonth,
+                  showToday,
+                  showYesterday,
+                  showTime,
+                }) => (
+                  <EntryCard
+                    key={entry.id}
+                    meta={entry}
+                    showYear={showYear}
+                    showMonth={showMonth}
+                    showToday={showToday}
+                    showYes={showYesterday}
+                    showTime={showTime}
+                    onEdit={() => handleEditEntry(entry.id)}
+                  />
+                ),
+              )}
+            </InfiniteScroll>
+          </main>
 
-        {/* Floating Action Button */}
-        <div className="fixed right-6 bottom-6 z-40">
-          <Button
-            size="lg"
-            className="h-14 w-14 rounded-full bg-[hsl(207,90%,54%)] shadow-lg transition-all duration-200 hover:bg-[hsl(207,90%,48%)] hover:shadow-xl"
-            onClick={handleCreateEntry}
-          >
-            <Plus className="text-xl" />
-          </Button>
-        </div>
+          {/* Floating Action Button */}
+          <div className="fixed right-6 bottom-6 z-40">
+            <Button
+              size="lg"
+              className="h-14 w-14 rounded-full bg-[hsl(207,90%,54%)] shadow-lg transition-all duration-200 hover:bg-[hsl(207,90%,48%)] hover:shadow-xl"
+              onClick={handleCreateEntry}
+            >
+              <Plus className="text-xl" />
+            </Button>
+          </div>
 
-        {/* Overlays and Modals */}
-        {/* <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} /> */}
-        {/* <CalendarOverlay
+          {/* Overlays and Modals */}
+          {/* <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} /> */}
+          {/* <CalendarOverlay
           open={calendarOpen}
           onClose={() => setCalendarOpen(false)}
           entries={entries}
         /> */}
-        {editingEntry !== 0 && (
-          <EntryModal
-            open={entryModalOpen}
-            onClose={handleEntryModalClose}
-            entryId={editingEntry}
-            refresh={refresh}
-          />
-        )}
+        </div>
       </div>
+      <EntryModal
+        open={entryModalOpen}
+        onClose={handleEntryModalClose}
+        entryId={editingEntry}
+        refresh={refresh}
+      />
     </div>
   );
 }

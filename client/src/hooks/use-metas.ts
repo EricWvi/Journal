@@ -14,7 +14,7 @@ export function useGetEntriesCount(year: number) {
         },
       );
       const data = await response.json();
-      return data["message"];
+      return data.message.count;
     },
   });
 }
@@ -29,22 +29,22 @@ export function useGetWordsCount() {
         {},
       );
       const data = await response.json();
-      return data["message"];
+      return data.message.count;
     },
   });
 }
 
-export function useGetDaysCount() {
-  return useQuery<number>({
+export function useGetEntryDate() {
+  return useQuery<string[]>({
     queryKey: ["/api/meta/day"],
     queryFn: async () => {
       const response = await apiRequest(
         "POST",
-        "/api/meta?Action=GetDaysCount",
+        "/api/meta?Action=GetEntryDate",
         {},
       );
       const data = await response.json();
-      return data["message"];
+      return data.message.entryDates;
     },
   });
 }

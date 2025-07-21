@@ -62,10 +62,15 @@ export class MemStorage implements IStorage {
     return this.entries.get(id);
   }
 
+  async getEntryCount(): Promise<number> {
+    return this.entries.size;
+  }
+
   async getEntryDate(): Promise<string[]> {
-    return Array.from(this.entries.values())
+    const dates = Array.from(this.entries.values())
       .filter((entry) => entry.visibility !== Visibility.DRAFT)
-      .map((entry) => entry.createdAt.toISOString());
+      .map((entry) => new Date(entry.createdAt).toISOString().split("T")[0]);
+    return Array.from(new Set(dates));
   }
 
   async createDraft(): Promise<Entry> {

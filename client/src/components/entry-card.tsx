@@ -109,7 +109,7 @@ export default function EntryCard({
           )}
 
           {/* entry card */}
-          <div className="entry-card-shadow bg-entry-card mb-4 flex flex-col overflow-hidden rounded-lg backdrop-blur-[10px] transition-shadow hover:shadow-md">
+          <div className="entry-card-shadow bg-entry-card mb-4 flex flex-col overflow-hidden rounded-lg transition-shadow hover:shadow-md">
             {/* TODO picture loading css animation */}
             <div className="my-1 px-1">
               <ImageList

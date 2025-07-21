@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./journal.css";
 import Header from "@/components/header";
 import EntryCard from "@/components/entry-card";
 import EntryModal from "@/components/entry-modal";
@@ -97,7 +96,7 @@ export default function Journal() {
         ></div>
         <div
           id="scrollableDiv"
-          className={`journal-bg flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-xl" : ""}`}
+          className={`journal-bg scrollbar-hide flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-xl" : ""}`}
         >
           <Header
             onSearchToggle={() => setSearchOpen(!searchOpen)}

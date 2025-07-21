@@ -85,8 +85,12 @@ var MemStorage = class {
   async getEntry(id) {
     return this.entries.get(id);
   }
+  async getEntryCount() {
+    return this.entries.size;
+  }
   async getEntryDate() {
-    return Array.from(this.entries.values()).filter((entry) => entry.visibility !== "DRAFT" /* DRAFT */).map((entry) => entry.createdAt.toISOString());
+    const dates = Array.from(this.entries.values()).filter((entry) => entry.visibility !== "DRAFT" /* DRAFT */).map((entry) => new Date(entry.createdAt).toISOString().split("T")[0]);
+    return Array.from(new Set(dates));
   }
   async createDraft() {
     const id = this.currentId++;
@@ -219,10 +223,6 @@ async function registerRoutes(app2) {
         }
         return res.json({ message: entry });
       }
-      if (action === "GetEntryDate") {
-        const dates = await storage.getEntryDate();
-        return res.json({ message: { entryDates: dates } });
-      }
       if (action === "CreateEntryFromDraft") {
         const { id, ...data } = req.body;
         const validatedData = insertEntrySchema.partial().parse(data);
@@ -264,16 +264,16 @@ async function registerRoutes(app2) {
     const action = req.query.Action;
     try {
       if (action === "GetEntriesCount") {
-        const count = Math.floor(Math.random() * 600) + 1;
-        return res.json({ message: count });
+        const count = await storage.getEntryCount();
+        return res.json({ message: { count } });
       }
       if (action === "GetWordsCount") {
         const count = Math.floor(Math.random() * 1e5) + 1;
-        return res.json({ message: count });
+        return res.json({ message: { count } });
       }
-      if (action === "GetDaysCount") {
-        const count = Math.floor(Math.random() * 1e3) + 1;
-        return res.json({ message: count });
+      if (action === "GetEntryDate") {
+        const dates = await storage.getEntryDate();
+        return res.json({ message: { entryDates: dates } });
       }
       return res.status(400).json({ message: "Unknown Action" });
     } catch (error) {

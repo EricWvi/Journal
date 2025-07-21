@@ -8,16 +8,6 @@ export async function outTrash(ids: string[]) {
   console.log("outTrash response:", data);
 }
 
-export async function getEntryDate(): Promise<string[]> {
-  const response = await apiRequest(
-    "POST",
-    "/api/media?Action=GetEntryDate",
-    {},
-  );
-  const data = await response.json();
-  return data.message.entryDates;
-}
-
 export function formatMediaUrl(url: string): string {
   if (url.startsWith("/api/m/")) {
     return url;

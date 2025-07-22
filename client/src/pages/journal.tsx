@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "@/components/header";
 import EntryCard from "@/components/entry-card";
 import EntryModal from "@/components/entry-modal";
@@ -18,6 +18,7 @@ export default function Journal() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [entryModalOpen, setEntryModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<number>(0);
+  const scrollableDivRef = useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
   const [entries, setEntries] = useState<EntryMeta[]>([]);
@@ -44,10 +45,16 @@ export default function Journal() {
   const loadInitialData = async () => {
     setLoading(true);
     try {
-      const [metas, hasMore] = await useEntries(1, condition, setQueryFn);
+      const [metas, more] = await useEntries(1, condition, setQueryFn);
       setEntries(metas);
-      setHasMore(hasMore);
+      setHasMore(more);
       setPage(2);
+      setTimeout(() => {
+        const el = scrollableDivRef.current;
+        if (el && el.scrollHeight <= el.clientHeight && more) {
+          fetchMoreData(2);
+        }
+      }, 100);
     } catch (err) {
       console.error("Error loading initial data:", err);
     } finally {
@@ -55,7 +62,7 @@ export default function Journal() {
     }
   };
 
-  const fetchMoreData = async () => {
+  const fetchMoreData = async (page: number) => {
     if (loading) return;
     setLoading(true);
     try {
@@ -96,7 +103,8 @@ export default function Journal() {
         ></div>
         <div
           id="scrollableDiv"
-          className={`journal-bg scrollbar-hide flex h-full flex-col overflow-y-auto ${entryModalOpen ? "rounded-xl" : ""}`}
+          ref={scrollableDivRef}
+          className={`journal-bg scrollbar-hide h-full overflow-y-auto ${entryModalOpen ? "rounded-xl" : ""}`}
         >
           <Header
             onSearchToggle={() => setSearchOpen(!searchOpen)}
@@ -108,7 +116,7 @@ export default function Journal() {
               scrollableTarget="scrollableDiv"
               className="px-5 sm:px-7 lg:px-9"
               dataLength={entries.length}
-              next={fetchMoreData}
+              next={() => fetchMoreData(page)}
               hasMore={hasMore}
               loader={
                 <div className="space-y-6">

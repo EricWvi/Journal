@@ -3,7 +3,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 export function useGetEntriesCount(year: number) {
   return useQuery<number>({
-    queryKey: ["/api/meta/entry", year],
+    queryKey: ["/api/meta", "entry", year],
     enabled: !!year,
     queryFn: async () => {
       const response = await apiRequest(
@@ -21,7 +21,7 @@ export function useGetEntriesCount(year: number) {
 
 export function useGetWordsCount() {
   return useQuery<number>({
-    queryKey: ["/api/meta/word"],
+    queryKey: ["/api/meta", "word"],
     queryFn: async () => {
       const response = await apiRequest(
         "POST",
@@ -36,7 +36,7 @@ export function useGetWordsCount() {
 
 export function useGetEntryDate() {
   return useQuery<string[]>({
-    queryKey: ["/api/meta/day"],
+    queryKey: ["/api/meta", "day"],
     queryFn: async () => {
       const response = await apiRequest(
         "POST",

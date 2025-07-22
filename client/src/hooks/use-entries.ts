@@ -99,10 +99,10 @@ export function useCreateEntryFromDraft() {
       );
       return response.json();
     },
-    onSuccess: (_data, variables) =>
-      queryClient.invalidateQueries({
-        queryKey: ["/api/entry", variables.id],
-      }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/entry", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meta"], exact: false });
+    },
   });
 }
 
@@ -121,10 +121,10 @@ export function useUpdateEntry() {
       );
       return response.json();
     },
-    onSuccess: (_data, variables) =>
-      queryClient.invalidateQueries({
-        queryKey: ["/api/entry", variables.id],
-      }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/entry", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meta"], exact: false });
+    },
   });
 }
 
@@ -144,9 +144,7 @@ export function useUpdateDraft() {
       return response.json();
     },
     onSuccess: (_data, variables) =>
-      queryClient.invalidateQueries({
-        queryKey: ["/api/entry", variables.id],
-      }),
+      queryClient.invalidateQueries({ queryKey: ["/api/entry", variables.id] }),
   });
 }
 
@@ -160,6 +158,7 @@ export function useDeleteEntry() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homepage"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meta"], exact: false });
     },
   });
 }

@@ -355,7 +355,7 @@ var vite_config_default = defineConfig({
         name: "Journal App",
         short_name: "Journal",
         description: "Capture and write about the details of everyday moments and special events.",
-        background_color: "#232338",
+        background_color: "#f7f5f4",
         display: "standalone",
         icons: [
           {

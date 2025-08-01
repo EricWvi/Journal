@@ -36,8 +36,8 @@ const WYSIWYG = (props: Props) => {
     props.editingEntry?.content.forEach((node) => {
       switch (node.type) {
         case NodeType.IMAGE:
-          const child = document.createElement("span");
-          child.className = "block h-42 w-full rounded-lg overflow-hidden";
+          const child = document.createElement("div");
+          child.className = "block h-48 w-full";
           child.contentEditable = "false";
           child.draggable = false;
           createRoot(child).render(<EditorPhoto imgSrc={node.content ?? ""} />);

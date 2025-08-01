@@ -115,11 +115,14 @@ type PhotoProps = {
 
 export const EditorPhoto = ({ imgSrc }: PhotoProps) => {
   return (
-    <img
-      className="h-full w-full object-cover"
-      src={formatMediaUrl(imgSrc)}
-      alt="img"
-    />
+    <>
+      <img
+        className="h-42 w-full overflow-hidden rounded-lg object-cover"
+        src={formatMediaUrl(imgSrc)}
+        alt="img"
+      />
+      <div>text</div>
+    </>
   );
 };
 

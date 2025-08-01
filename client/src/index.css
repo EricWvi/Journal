@@ -199,6 +199,9 @@
     );
     filter: blur(2px);
     z-index: 5;
+    @media (prefers-color-scheme: dark) {
+      background: none;
+    }
   }
 
   .toolbar-after::after {
